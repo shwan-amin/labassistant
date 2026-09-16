@@ -17,9 +17,9 @@ One stage at a time, in order. Each stage ends with tests + lint passing, boxes 
 - **Done when:** the graph loads and validates, and tests cover the invalid cases.
 
 ## Stage 2: Code execution tool
-- [ ] A sandboxed runner that executes a submission against the task's tests, with a timeout, captured output and no network access
-- [ ] Returns a structured result: tests passed or failed, error messages, timeouts and exceptions
-- [ ] Exposed as an LLM tool definition (`run_tests`)
+- [x] A sandboxed runner that executes a submission against the task's tests, with a timeout, captured output and no network access
+- [x] Returns a structured result: tests passed or failed, error messages, timeouts and exceptions
+- [x] Exposed as an LLM tool definition (`run_tests`)
 - **Done when:** tests cover a correct solution, a wrong answer, an infinite recursion or timeout, and a syntax error.
 
 ## Stage 3: Diagnosis agent

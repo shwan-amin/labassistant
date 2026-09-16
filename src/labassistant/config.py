@@ -21,6 +21,9 @@ class Settings(BaseSettings):
     llm_model: str = "claude-sonnet-5"
     llm_max_tokens: int = 16000
 
+    # Wall-clock limit for one run of a submission against the task tests.
+    runner_timeout_seconds: float = 10.0
+
     database_path: Path = Path("labassistant.db")
     knowledge_dir: Path = Path("knowledge")
     tasks_dir: Path = Path("tasks")

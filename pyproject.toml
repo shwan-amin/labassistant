@@ -8,11 +8,12 @@ dependencies = [
     "anthropic>=0.40",
     "pydantic>=2.7",
     "pydantic-settings>=2.3",
+    # The code runner executes task tests with pytest in a subprocess.
+    "pytest>=8.0",
 ]
 
 [dependency-groups]
 dev = [
-    "pytest>=8.0",
     "ruff>=0.6",
 ]
 
