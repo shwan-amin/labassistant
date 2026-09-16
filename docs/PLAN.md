@@ -15,7 +15,7 @@ One stage at a time, in order. Each stage ends with tests + lint passing, boxes 
 - [x] Pydantic schema for the concept graph: concepts with `id`, `name`, `description`, `prerequisites`, and a list of `misconceptions` (each with `id`, `description`, and example symptoms)
 - [x] `knowledge/recursion.json` with 6–8 concepts and 2–3 misconceptions each
 - [x] Loader with validation: prerequisite IDs exist, no cycles, unique IDs
-- [ ] 2 small sample lab projects in `sample_labs/` (3–6 Python files each, with a short spec and a few pytest tests) that use recursion across more than one file
+- [x] 2 small sample lab projects in `sample_labs/` (3–6 Python files each, with a short spec and a few pytest tests) that use recursion across more than one file
 - **Done when:** the graph loads and validates, tests cover the invalid cases, and the sample labs' own tests pass on their reference versions.
 
 ## Stage 2: Context builder
