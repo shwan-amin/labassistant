@@ -10,10 +10,10 @@ One stage at a time, in order. Each stage ends with tests + lint passing, boxes 
 - **Done when:** `uv run pytest` and `uv run ruff check .` both pass on a placeholder test.
 
 ## Stage 1: Knowledge model
-- [ ] Pydantic schema for the concept graph: concepts with `id`, `name`, `description`, `prerequisites`, and a list of `misconceptions` (each with `id`, `description`, and example symptoms)
-- [ ] `knowledge/recursion.json` with 6–8 concepts and 2–3 misconceptions each
-- [ ] Loader with validation: prerequisite IDs exist, no cycles, unique IDs
-- [ ] One programming task in `tasks/` with a spec, a reference solution and pytest-style test cases
+- [x] Pydantic schema for the concept graph: concepts with `id`, `name`, `description`, `prerequisites`, and a list of `misconceptions` (each with `id`, `description`, and example symptoms)
+- [x] `knowledge/recursion.json` with 6–8 concepts and 2–3 misconceptions each
+- [x] Loader with validation: prerequisite IDs exist, no cycles, unique IDs
+- [x] One programming task in `tasks/` with a spec, a reference solution and pytest-style test cases
 - **Done when:** the graph loads and validates, and tests cover the invalid cases.
 
 ## Stage 2: Code execution tool

@@ -1,0 +1,198 @@
+{
+  "topic": "recursion",
+  "description": "Introductory recursion in Python, as taught in a first-year programming course.",
+  "concepts": [
+    {
+      "id": "recursive_decomposition",
+      "name": "Recursive decomposition",
+      "description": "Expressing a problem in terms of one or more smaller instances of the same problem, and trusting that the smaller instances are solved correctly.",
+      "prerequisites": [],
+      "misconceptions": [
+        {
+          "id": "traces_every_call",
+          "description": "Believes you must mentally trace every recursive call to trust the result, rather than assuming the recursive call is correct for the smaller input (the 'recursive leap of faith').",
+          "symptoms": [
+            "Explanation walks through every call level instead of stating what one call does",
+            "Adds special cases for inputs of size 2 or 3 because they 'could not trace' larger ones"
+          ]
+        },
+        {
+          "id": "subproblem_not_same_shape",
+          "description": "Splits the input into pieces that are not the same kind of problem, so the recursive call cannot actually solve them.",
+          "symptoms": [
+            "Recursive call receives an element (e.g. an int) where the function expects a list",
+            "Recursive call's argument has a different type or meaning from the original parameter"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "base_case",
+      "name": "Base case",
+      "description": "A condition under which the function returns a result directly, without making a recursive call. Every recursion needs at least one reachable base case.",
+      "prerequisites": ["recursive_decomposition"],
+      "misconceptions": [
+        {
+          "id": "missing_base_case",
+          "description": "Omits the base case, believing the recursion will stop on its own.",
+          "symptoms": [
+            "No branch returns without calling the function again",
+            "RecursionError on every input"
+          ]
+        },
+        {
+          "id": "base_case_wrong_value",
+          "description": "Has a base case that returns the wrong value, often confusing the identity for the operation (e.g. returns 1 for an empty sum, or None).",
+          "symptoms": [
+            "Empty input returns 1, None or the input itself instead of 0",
+            "Every result is off by a constant amount"
+          ]
+        },
+        {
+          "id": "base_case_too_narrow",
+          "description": "Handles only one kind of terminating input and misses others (e.g. handles an empty list but not a non-list element).",
+          "symptoms": [
+            "Works on flat or simple inputs but crashes on edge cases such as empty sublists",
+            "TypeError when the function is called on an int"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "recursive_case",
+      "name": "Recursive case",
+      "description": "The branch that solves the problem by calling the function on smaller input(s) and combining the results.",
+      "prerequisites": ["recursive_decomposition"],
+      "misconceptions": [
+        {
+          "id": "result_not_combined",
+          "description": "Makes the recursive call but does not combine its result with the current step's work.",
+          "symptoms": [
+            "Returns only the recursive call's result, dropping the current element",
+            "Returns only the current element, ignoring the recursive call's result"
+          ]
+        },
+        {
+          "id": "recurses_on_whole_input",
+          "description": "Calls the function on the same input rather than on part of it.",
+          "symptoms": [
+            "Recursive call passes the original parameter unchanged",
+            "RecursionError even though a base case exists"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "progress_to_base_case",
+      "name": "Progress towards the base case",
+      "description": "Each recursive call must move the input measurably closer to a base case so the recursion is guaranteed to terminate.",
+      "prerequisites": ["base_case", "recursive_case"],
+      "misconceptions": [
+        {
+          "id": "shrinks_wrong_part",
+          "description": "Changes the input in a way that does not approach the base case (e.g. slices from the wrong end or changes an unrelated variable).",
+          "symptoms": [
+            "Slice such as lst[0:] or lst[:len(lst)] that keeps the same length",
+            "Timeout or RecursionError on inputs longer than one element"
+          ]
+        },
+        {
+          "id": "base_case_unreachable",
+          "description": "Has a base case and makes progress, but the progress can skip over the base case condition.",
+          "symptoms": [
+            "Base case checks len(lst) == 1 but the input can become empty",
+            "Terminates for some input sizes but not others"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "call_stack",
+      "name": "The call stack",
+      "description": "Each call gets its own frame with its own local variables; frames are pushed on call and popped on return, and deep recursion can exhaust the stack.",
+      "prerequisites": ["recursive_case"],
+      "misconceptions": [
+        {
+          "id": "shared_local_variables",
+          "description": "Believes local variables are shared between recursive calls, so updating a local in a deeper call changes it in the caller.",
+          "symptoms": [
+            "Accumulates into a local variable in the callee and expects the caller to see it",
+            "Explanation says 'total keeps adding up across calls' without passing or returning it"
+          ]
+        },
+        {
+          "id": "uses_global_accumulator",
+          "description": "Relies on a global or default-mutable accumulator to carry state between calls, often because frames are not understood.",
+          "symptoms": [
+            "global total or a def f(lst, acc=[]) default argument",
+            "Correct on the first call but wrong on repeated calls in the same process"
+          ]
+        },
+        {
+          "id": "unaware_of_stack_depth",
+          "description": "Does not realise that each call uses stack space, so very deep recursion fails with RecursionError.",
+          "symptoms": [
+            "Explanation claims recursion depth is unlimited",
+            "Surprise at RecursionError on deeply nested input despite correct logic"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "return_value_propagation",
+      "name": "Return value propagation",
+      "description": "A value returned by a deeper call goes back only to its direct caller, which must use it and return its own result in turn.",
+      "prerequisites": ["recursive_case", "call_stack"],
+      "misconceptions": [
+        {
+          "id": "missing_return_on_recursive_call",
+          "description": "Calls the function recursively but forgets to return (or use) the result, so None comes back.",
+          "symptoms": [
+            "Line like sum_nested(rest) with no return or assignment",
+            "Function returns None for non-trivial inputs, or TypeError adding int and NoneType"
+          ]
+        },
+        {
+          "id": "return_goes_to_top",
+          "description": "Believes a return in the base case sends its value straight back to the original caller, skipping intermediate frames.",
+          "symptoms": [
+            "Explanation says the base case 'returns the answer to the user'",
+            "Intermediate calls do not return anything after the recursive call"
+          ]
+        },
+        {
+          "id": "print_instead_of_return",
+          "description": "Prints the result instead of returning it, treating output as the function's value.",
+          "symptoms": [
+            "print(...) in the base or recursive case with no return",
+            "Correct numbers appear in stdout but tests see None"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "recursion_vs_iteration",
+      "name": "Recursion vs iteration",
+      "description": "Knowing when a problem's structure suits recursion (e.g. nested data) or a loop, and how the two can be combined correctly.",
+      "prerequisites": ["call_stack", "progress_to_base_case"],
+      "misconceptions": [
+        {
+          "id": "loop_return_exits_early",
+          "description": "Mixes a loop with recursion and returns inside the loop, so only the first element is processed.",
+          "symptoms": [
+            "return statement inside a for loop body in a recursive function",
+            "Result equals the value of the first element or first sublist only"
+          ]
+        },
+        {
+          "id": "flattens_one_level_only",
+          "description": "Uses iteration where recursion is needed, handling a fixed nesting depth instead of arbitrary depth.",
+          "symptoms": [
+            "Nested for loops with no recursive call",
+            "Passes flat and singly nested tests but fails deeper nesting"
+          ]
+        }
+      ]
+    }
+  ]
+}
