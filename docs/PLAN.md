@@ -1,4 +1,4 @@
-# ConceptCoach build plan
+# Lab Assistant build plan
 
 One stage at a time, in order. Each stage ends with tests + lint passing, boxes ticked here, a summary and a suggested commit message. Work is committed locally and never pushed.
 
@@ -66,7 +66,7 @@ One stage at a time, in order. Each stage ends with tests + lint passing, boxes 
 - **Done when:** one command runs the full evaluation and produces the tables and charts.
 
 ## Stage 9: VS Code extension (stretch)
-- [ ] TypeScript extension in `vscode-extension/` with a "ConceptCoach: Check my understanding" command
+- [ ] TypeScript extension in `vscode-extension/` with a "Lab Assistant: Check my understanding" command
 - [ ] Diagnostics highlighting evidence lines for each suspected gap
 - [ ] Webview panel for questions, answers, feedback cards and the concept map
 - **Done when:** it runs in the Extension Development Host against the local backend.

@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from conceptcoach.config import Settings
+from labassistant.config import Settings
 
 
 def test_defaults_without_env(monkeypatch: pytest.MonkeyPatch) -> None:

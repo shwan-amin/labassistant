@@ -3,7 +3,7 @@
 from dataclasses import dataclass
 from typing import Any
 
-from conceptcoach.llm.base import LLMResponse, Message, ToolCall, ToolDefinition
+from labassistant.llm.base import LLMResponse, Message, ToolCall, ToolDefinition
 
 
 @dataclass

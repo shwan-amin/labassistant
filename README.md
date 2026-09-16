@@ -1,4 +1,4 @@
-# ConceptCoach
+# Lab Assistant
 
 An agentic Socratic tutor that assesses a student's *understanding* of core computing concepts rather than giving a mark.
 

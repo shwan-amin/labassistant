@@ -1,5 +1,5 @@
-import conceptcoach
+import labassistant
 
 
 def test_package_imports() -> None:
-    assert conceptcoach.__doc__
+    assert labassistant.__doc__

@@ -21,7 +21,7 @@ class Settings(BaseSettings):
     llm_model: str = "claude-sonnet-5"
     llm_max_tokens: int = 16000
 
-    database_path: Path = Path("conceptcoach.db")
+    database_path: Path = Path("labassistant.db")
     knowledge_dir: Path = Path("knowledge")
     tasks_dir: Path = Path("tasks")
     materials_dir: Path = Path("materials")

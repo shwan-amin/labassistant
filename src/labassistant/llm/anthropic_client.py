@@ -2,8 +2,8 @@
 
 import anthropic
 
-from conceptcoach.config import Settings, get_settings
-from conceptcoach.llm.base import LLMResponse, Message, ToolCall, ToolDefinition, Usage
+from labassistant.config import Settings, get_settings
+from labassistant.llm.base import LLMResponse, Message, ToolCall, ToolDefinition, Usage
 
 
 class MissingAPIKeyError(RuntimeError):

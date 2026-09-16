@@ -38,7 +38,7 @@ class LLMResponse(BaseModel):
 
 
 class LLMClient(Protocol):
-    """Anything with this `complete` method can drive ConceptCoach.
+    """Anything with this `complete` method can drive Lab Assistant.
 
     A Protocol (structural typing) means implementations don't need to inherit
     from anything; they just need the right method signature.

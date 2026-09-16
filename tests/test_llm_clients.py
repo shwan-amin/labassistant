@@ -1,8 +1,8 @@
 import pytest
 
-from conceptcoach.config import Settings
-from conceptcoach.llm import FakeLLMClient, LLMClient
-from conceptcoach.llm.anthropic_client import AnthropicClient, MissingAPIKeyError
+from labassistant.config import Settings
+from labassistant.llm import FakeLLMClient, LLMClient
+from labassistant.llm.anthropic_client import AnthropicClient, MissingAPIKeyError
 
 
 def test_fake_client_returns_scripted_responses_in_order() -> None:

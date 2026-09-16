@@ -1,4 +1,4 @@
-# ConceptCoach
+# Lab Assistant
 
 An agentic Socratic tutor that assesses a student's *understanding* of core computing concepts instead of giving a mark. It diagnoses knowledge gaps in submitted code using an explicit concept graph, probes them with guiding questions, links feedback to lecture timestamps and slides, and tracks a per-concept learner model. It is a research prototype for a UNSW Taste of Research application ("Agentic AI for Assessment in Experiential Learning Environments").
 
@@ -32,7 +32,7 @@ Interfaces (Streamlit, VS Code extension) only talk to the FastAPI backend. No c
 ## Repo layout
 
 ```
-src/conceptcoach/
+src/labassistant/
   config.py          # settings from environment variables
   llm/               # LLM client interface, Anthropic client, fake client for tests
   knowledge/         # concept graph schema and loader
@@ -59,7 +59,7 @@ docs/                # PLAN.md, FINDINGS.md
 uv sync                                          # install dependencies
 uv run pytest                                    # run tests (offline, fake LLM)
 uv run ruff check . && uv run ruff format .      # lint and format
-uv run uvicorn conceptcoach.api.main:app --reload
+uv run uvicorn labassistant.api.main:app --reload
 uv run streamlit run ui/streamlit_app.py
 uv run python -m eval.run_all                    # full evaluation (Stage 8)
 ```
@@ -79,7 +79,7 @@ Update this section if commands change.
 
 ## LLM usage
 
-- All LLM calls go through the client interface in `src/conceptcoach/llm/`.
+- All LLM calls go through the client interface in `src/labassistant/llm/`.
 - Model name comes from `LLM_MODEL` (default `claude-sonnet-5`) and the key from `ANTHROPIC_API_KEY`. Never hard-code either.
 - Ask for structured JSON output and validate it with Pydantic. On invalid output, retry once with the validation error, then fail clearly.
 - Any concept or misconception ID from the model must exist in the loaded concept graph.
