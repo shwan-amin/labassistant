@@ -64,6 +64,9 @@ class AnthropicClient:
             usage=Usage(
                 input_tokens=response.usage.input_tokens,
                 output_tokens=response.usage.output_tokens,
+                # These are None when prompt caching was not involved.
+                cache_creation_input_tokens=response.usage.cache_creation_input_tokens or 0,
+                cache_read_input_tokens=response.usage.cache_read_input_tokens or 0,
             ),
             content=[block.model_dump(exclude_none=True) for block in response.content],
         )

@@ -1,7 +1,7 @@
 import pytest
 
 from labassistant.config import Settings
-from labassistant.llm import FakeLLMClient, LLMClient
+from labassistant.llm import FakeLLMClient, LLMClient, Usage
 from labassistant.llm.anthropic_client import AnthropicClient, MissingAPIKeyError
 
 
@@ -58,7 +58,12 @@ def test_anthropic_response_conversion_without_network() -> None:
             "model": "claude-sonnet-5",
             "stop_reason": "tool_use",
             "stop_sequence": None,
-            "usage": {"input_tokens": 12, "output_tokens": 7},
+            "usage": {
+                "input_tokens": 12,
+                "output_tokens": 7,
+                "cache_creation_input_tokens": None,
+                "cache_read_input_tokens": 300,
+            },
             "content": [
                 {"type": "text", "text": "Let me run the tests."},
                 {"type": "tool_use", "id": "toolu_1", "name": "run_tests", "input": {"a": 1}},
@@ -72,4 +77,37 @@ def test_anthropic_response_conversion_without_network() -> None:
     assert result.tool_calls[0].id == "toolu_1"
     assert result.tool_calls[0].input == {"a": 1}
     assert result.usage.input_tokens == 12
+    assert result.usage.cache_creation_input_tokens == 0
+    assert result.usage.cache_read_input_tokens == 300
     assert result.content[1]["type"] == "tool_use"
+
+
+def test_fake_client_reports_estimated_usage_when_not_scripted() -> None:
+    fake = FakeLLMClient([FakeLLMClient.text("a reply"), FakeLLMClient.text("another")])
+
+    first = fake.complete(system="x" * 400, messages=[{"role": "user", "content": "y" * 400}])
+    fake.complete(system="short", messages=[])
+
+    assert first.usage.input_tokens >= 200
+    assert first.usage.output_tokens > 0
+    assert fake.total_usage.input_tokens > first.usage.input_tokens
+    assert fake.total_usage.output_tokens > first.usage.output_tokens
+
+
+def test_fake_client_keeps_scripted_usage() -> None:
+    scripted = Usage(input_tokens=10, output_tokens=5, cache_read_input_tokens=90)
+    fake = FakeLLMClient([FakeLLMClient.text("ok", usage=scripted)])
+
+    response = fake.complete(system="anything", messages=[])
+
+    assert response.usage == scripted
+    assert response.usage.total_input_tokens == 100
+
+
+def test_usage_adds_up() -> None:
+    total = Usage(input_tokens=1, output_tokens=2, cache_creation_input_tokens=3) + Usage(
+        input_tokens=10, cache_read_input_tokens=4
+    )
+    assert total == Usage(
+        input_tokens=11, output_tokens=2, cache_creation_input_tokens=3, cache_read_input_tokens=4
+    )

@@ -20,8 +20,30 @@ class ToolCall(BaseModel):
 
 
 class Usage(BaseModel):
+    """Token counts for one call, or a running total across calls.
+
+    Anthropic reports cached prompt tokens separately from `input_tokens`:
+    cache writes cost a little more than normal input, cache reads much less.
+    Keeping all three lets the evaluation estimate real cost per check.
+    """
+
     input_tokens: int = 0
     output_tokens: int = 0
+    cache_creation_input_tokens: int = 0
+    cache_read_input_tokens: int = 0
+
+    @property
+    def total_input_tokens(self) -> int:
+        return self.input_tokens + self.cache_creation_input_tokens + self.cache_read_input_tokens
+
+    def __add__(self, other: "Usage") -> "Usage":
+        return Usage(
+            input_tokens=self.input_tokens + other.input_tokens,
+            output_tokens=self.output_tokens + other.output_tokens,
+            cache_creation_input_tokens=self.cache_creation_input_tokens
+            + other.cache_creation_input_tokens,
+            cache_read_input_tokens=self.cache_read_input_tokens + other.cache_read_input_tokens,
+        )
 
 
 class LLMResponse(BaseModel):

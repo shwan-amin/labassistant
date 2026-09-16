@@ -1,6 +1,6 @@
 # Lab Assistant
 
-An agentic Socratic tutor that assesses a student's *understanding* of core computing concepts rather than giving a mark.
+An agentic Socratic tutor used from inside VS Code. A student highlights code in their lab, and Lab Assistant assesses their *understanding* of core computing concepts rather than giving a mark. It never writes solutions or corrected code.
 
 > Research prototype for the UNSW Taste of Research project "Agentic AI for Assessment in Experiential Learning Environments". Work in progress: see [`docs/PLAN.md`](docs/PLAN.md).
 

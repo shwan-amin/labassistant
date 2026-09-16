@@ -21,3 +21,10 @@ def test_reads_environment_variables(monkeypatch: pytest.MonkeyPatch) -> None:
     assert settings.llm_model == "some-other-model"
     assert settings.anthropic_api_key == "test-key"
     assert settings.database_path == Path("/tmp/cc.db")
+
+
+def test_context_token_budget_from_env(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("CONTEXT_TOKEN_BUDGET", "5000")
+    assert Settings(_env_file=None).context_token_budget == 5000
+    monkeypatch.delenv("CONTEXT_TOKEN_BUDGET")
+    assert Settings(_env_file=None).context_token_budget == 20000

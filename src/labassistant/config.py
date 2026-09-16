@@ -21,12 +21,16 @@ class Settings(BaseSettings):
     llm_model: str = "claude-sonnet-5"
     llm_max_tokens: int = 16000
 
-    # Wall-clock limit for one run of a submission against the task tests.
+    # Maximum tokens of project context (code, repo map, spec) sent per check.
+    # The context builder fills this in priority order and records what it dropped.
+    context_token_budget: int = 20000
+
+    # Wall-clock limit for one sandboxed test run.
     runner_timeout_seconds: float = 10.0
 
     database_path: Path = Path("labassistant.db")
     knowledge_dir: Path = Path("knowledge")
-    tasks_dir: Path = Path("tasks")
+    sample_labs_dir: Path = Path("sample_labs")
     materials_dir: Path = Path("materials")
     eval_results_dir: Path = Path("eval/results")
 
