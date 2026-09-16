@@ -1,8 +1,8 @@
-"""Run an untrusted submission against a task's tests in a restricted subprocess.
+"""Run a student's project tests, or an agent-written probe test, in a restricted subprocess.
 
 Layers of protection, from strongest to weakest:
-1. A separate process in a fresh temporary directory, killed (with any children)
-   when the timeout expires.
+1. A separate process working on a temporary *copy* of the project, killed
+   (with any children) when the timeout expires.
 2. A minimal environment, so secrets such as ANTHROPIC_API_KEY are not visible.
 3. OS resource limits on CPU time and file size, set by the launcher (where supported).
 4. A Python audit hook that blocks sockets, subprocesses and ctypes (see _launcher.py).
@@ -22,101 +22,192 @@ import time
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-from labassistant.knowledge.tasks import Task
+from labassistant.context.models import ProjectFile
 from labassistant.runner.models import RunResult, RunStatus, TestOutcome, TestStatus
 
 DEFAULT_TIMEOUT_SECONDS = 10.0
-MAX_CODE_BYTES = 100_000
+MAX_PROJECT_BYTES = 2_000_000
+MAX_PROBE_BYTES = 20_000
 MAX_OUTPUT_CHARS = 4_000
 MAX_DETAILS_CHARS = 1_500
 MAX_FILE_BYTES = 10 * 1024 * 1024  # stops runaway writes, including captured print output
 
+# The probe goes in the project root so it can import the student's modules the
+# same way the project's own tests do.
+PROBE_FILE_NAME = "test_labassistant_probe.py"
 LAUNCHER = Path(__file__).with_name("_launcher.py")
 
 
-def list_test_names(task: Task) -> list[str]:
-    """Test function names in the task's test file (trusted code, so parsing it is fine)."""
-    tree = ast.parse(task.tests_path.read_text(encoding="utf-8"))
-    return [
-        node.name
-        for node in tree.body
-        if isinstance(node, ast.FunctionDef) and node.name.startswith("test_")
-    ]
+class ProbeError(ValueError):
+    """The probe test itself is invalid. This is the agent's mistake, not the student's."""
 
 
-def run_submission(
-    code: str,
-    task: Task,
+def is_test_file(path: str) -> bool:
+    name = path.rsplit("/", 1)[-1]
+    return name.endswith(".py") and (name.startswith("test_") or name.endswith("_test.py"))
+
+
+def list_test_ids(files: list[ProjectFile]) -> list[str]:
+    """IDs like "tests/test_metrics.py::test_depth" for test functions in the project.
+
+    Found by parsing, never by running. Test methods in classes are listed as
+    "file::Class::test_name". Files that don't parse contribute nothing.
+    """
+    ids = []
+    for file in files:
+        if not is_test_file(file.path):
+            continue
+        try:
+            tree = ast.parse(file.content)
+        except (SyntaxError, ValueError):
+            continue
+        for node in tree.body:
+            if isinstance(node, ast.FunctionDef) and node.name.startswith("test"):
+                ids.append(f"{file.path}::{node.name}")
+            elif isinstance(node, ast.ClassDef) and node.name.startswith("Test"):
+                ids.extend(
+                    f"{file.path}::{node.name}::{item.name}"
+                    for item in node.body
+                    if isinstance(item, ast.FunctionDef) and item.name.startswith("test")
+                )
+    return ids
+
+
+def run_project(
+    files: list[ProjectFile],
     *,
-    test_names: list[str] | None = None,
+    test_ids: list[str] | None = None,
+    probe_code: str | None = None,
     timeout_seconds: float = DEFAULT_TIMEOUT_SECONDS,
 ) -> RunResult:
-    """Run `code` as solution.py against the task's tests. Never raises for bad submissions."""
-    if len(code.encode("utf-8")) > MAX_CODE_BYTES:
-        return RunResult(status=RunStatus.ERROR, error_message="submission is too large")
+    """Run the project's tests (all, or `test_ids`), or only `probe_code` if given.
 
-    if syntax_problem := _check_syntax(code):
+    Never raises for problems in the student's code; those come back as a RunResult.
+    Raises ProbeError if `probe_code` itself is invalid.
+    """
+    if probe_code is not None:
+        _check_probe(probe_code, files)
+
+    if sum(len(f.content.encode("utf-8")) for f in files) > MAX_PROJECT_BYTES:
+        return RunResult(status=RunStatus.ERROR, error_message="project is too large to run")
+
+    if syntax_problem := _check_project_syntax(files):
         return syntax_problem
 
-    selected = _validate_test_names(task, test_names)
-    if isinstance(selected, RunResult):
-        return selected
+    if probe_code is not None:
+        targets = [PROBE_FILE_NAME]
+    else:
+        selected = _validate_test_ids(files, test_ids)
+        if isinstance(selected, RunResult):
+            return selected
+        targets = selected
 
     with tempfile.TemporaryDirectory(prefix="labassistant-run-") as tmp:
-        workdir = Path(tmp)
-        (workdir / "solution.py").write_text(code, encoding="utf-8")
-        shutil.copy(task.tests_path, workdir / "test_solution.py")
-        shutil.copy(LAUNCHER, workdir / "_launcher.py")
-        return _run_pytest(workdir, selected, timeout_seconds)
+        project_dir = Path(tmp) / "project"
+        runner_dir = Path(tmp) / "runner"  # kept apart so it can't clash with student files
+        runner_dir.mkdir()
+        shutil.copy(LAUNCHER, runner_dir / "_launcher.py")
+        _write_project(project_dir, files)
+        if probe_code is not None:
+            (project_dir / PROBE_FILE_NAME).write_text(probe_code, encoding="utf-8")
+
+        result = _run_pytest(project_dir, runner_dir / "_launcher.py", targets, timeout_seconds)
+        result.probe = probe_code is not None
+        return result
 
 
-def _check_syntax(code: str) -> RunResult | None:
-    # ast.parse only builds a syntax tree; it does not execute anything.
+# --- checks before running ---
+
+
+def _check_probe(probe_code: str, files: list[ProjectFile]) -> None:
+    if len(probe_code.encode("utf-8")) > MAX_PROBE_BYTES:
+        raise ProbeError(f"probe test is larger than {MAX_PROBE_BYTES} bytes")
+    if any(f.path == PROBE_FILE_NAME for f in files):
+        raise ProbeError(f"the project already has a file called {PROBE_FILE_NAME}")
     try:
-        ast.parse(code, filename="solution.py")
+        tree = ast.parse(probe_code)
     except SyntaxError as exc:
-        return RunResult(
-            status=RunStatus.SYNTAX_ERROR,
-            error_message=f"{type(exc).__name__}: {exc.msg}",
-            error_line=exc.lineno,
+        raise ProbeError(f"probe test has a syntax error on line {exc.lineno}: {exc.msg}") from exc
+    if not any(isinstance(n, ast.FunctionDef) and n.name.startswith("test") for n in tree.body):
+        raise ProbeError(
+            "probe test must define at least one function whose name starts with 'test'"
         )
-    except (ValueError, RecursionError, MemoryError) as exc:  # e.g. null bytes, absurd nesting
-        return RunResult(status=RunStatus.SYNTAX_ERROR, error_message=f"could not parse: {exc}")
+
+
+def _check_project_syntax(files: list[ProjectFile]) -> RunResult | None:
+    # ast.parse only builds a syntax tree; it does not execute anything.
+    for file in sorted(files, key=lambda f: f.path):
+        if not file.is_python:
+            continue
+        try:
+            ast.parse(file.content, filename=file.path)
+        except SyntaxError as exc:
+            return RunResult(
+                status=RunStatus.SYNTAX_ERROR,
+                error_message=f"{type(exc).__name__} in {file.path}: {exc.msg}",
+                error_path=file.path,
+                error_line=exc.lineno,
+            )
+        except (ValueError, RecursionError, MemoryError) as exc:  # e.g. null bytes
+            return RunResult(
+                status=RunStatus.SYNTAX_ERROR,
+                error_message=f"could not parse {file.path}: {exc}",
+                error_path=file.path,
+            )
     return None
 
 
-def _validate_test_names(task: Task, test_names: list[str] | None) -> list[str] | RunResult:
-    """Only allow names that exist in the test file, so nothing odd reaches pytest's arguments."""
-    if not test_names:
-        return []
-    known = set(list_test_names(task))
-    unknown = sorted(set(test_names) - known)
+def _validate_test_ids(
+    files: list[ProjectFile], test_ids: list[str] | None
+) -> list[str] | RunResult:
+    """Only allow IDs that exist in the project, so nothing odd reaches pytest's arguments."""
+    known = list_test_ids(files)
+    if not known:
+        return RunResult(status=RunStatus.ERROR, error_message="the project has no tests")
+    if not test_ids:
+        return sorted({test_id.split("::")[0] for test_id in known})  # every test file
+    unknown = sorted(set(test_ids) - set(known))
     if unknown:
         return RunResult(
             status=RunStatus.ERROR,
-            error_message=f"unknown test names: {unknown}. Available: {sorted(known)}",
+            error_message=f"unknown test ids: {unknown}. Available: {sorted(known)}",
         )
-    return list(dict.fromkeys(test_names))  # de-duplicate, keep order
+    return list(dict.fromkeys(test_ids))  # de-duplicate, keep order
 
 
-def _run_pytest(workdir: Path, selected: list[str], timeout_seconds: float) -> RunResult:
-    targets = [f"test_solution.py::{name}" for name in selected] or ["test_solution.py"]
+def _write_project(project_dir: Path, files: list[ProjectFile]) -> None:
+    for file in files:
+        # ProjectFile paths are already normalised and cannot contain "..".
+        target = project_dir / file.path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(file.content, encoding="utf-8")
+
+
+# --- running ---
+
+
+def _run_pytest(
+    project_dir: Path, launcher: Path, targets: list[str], timeout_seconds: float
+) -> RunResult:
     command = [
         sys.executable,
         "-I",  # isolated mode: ignore PYTHON* env vars and the user site-packages
-        "_launcher.py",
+        str(launcher),
         *targets,
         "-q",
         "--tb=short",
+        # By default pytest stops everything if one test file fails to import. We want
+        # the other files' results too: they show which parts of the project still work.
+        "--continue-on-collection-errors",
         "-p",
         "no:cacheprovider",  # don't write .pytest_cache
-        "--junitxml=report.xml",
+        f"--junitxml={project_dir.parent / 'report.xml'}",
         "-o",
-        "junit_family=xunit1",
+        "junit_family=xunit1",  # includes each test's file path
     ]
     env = {
         "PATH": "/usr/bin:/bin",
-        "HOME": str(workdir),
+        "HOME": str(project_dir),
         "PYTHONDONTWRITEBYTECODE": "1",
         "PYTHONHASHSEED": "0",  # deterministic set/dict ordering across runs
         # Read by _launcher.py, which applies OS resource limits to itself.
@@ -127,12 +218,12 @@ def _run_pytest(workdir: Path, selected: list[str], timeout_seconds: float) -> R
     started = time.monotonic()
     process = subprocess.Popen(
         command,
-        cwd=workdir,
+        cwd=project_dir,
         env=env,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         text=True,
-        # A new process group lets us kill the submission and anything it spawned.
+        # A new process group lets us kill the tests and anything they spawned.
         start_new_session=True,
     )
     try:
@@ -147,9 +238,10 @@ def _run_pytest(workdir: Path, selected: list[str], timeout_seconds: float) -> R
         )
     duration = round(time.monotonic() - started, 3)
 
-    tests = _parse_junit_report(workdir / "report.xml", workdir)
-    output = _hide_workdir(output, workdir)
-    return _summarise(process.returncode, tests, _truncate(output, MAX_OUTPUT_CHARS), duration)
+    hide = [project_dir.parent]
+    tests, collection_errors = _parse_junit_report(project_dir.parent / "report.xml", hide)
+    output = _truncate(_hide_paths(output, hide), MAX_OUTPUT_CHARS)
+    return _summarise(process.returncode, tests, collection_errors, output, duration)
 
 
 def _kill_process_group(process: subprocess.Popen) -> None:
@@ -160,51 +252,76 @@ def _kill_process_group(process: subprocess.Popen) -> None:
     process.communicate()
 
 
-def _hide_workdir(text: str, workdir: Path) -> str:
+# --- reading results ---
+
+
+def _hide_paths(text: str, directories: list[Path]) -> str:
     """Remove the random temp directory from paths.
 
     It is noise for the LLM, and because it changes on every run it would make
     identical submissions look different in the consistency experiments.
     """
-    for path in {str(workdir.resolve()), str(workdir)}:
-        text = text.replace(path + os.sep, "").replace(path, ".")
+    for directory in directories:
+        # On macOS /var is a symlink to /private/var, so the same folder has two
+        # spellings. Replace the longer one first so no "/private" is left behind.
+        for path in sorted({str(directory.resolve()), str(directory)}, key=len, reverse=True):
+            text = text.replace(path + "/project/", "").replace(path + "/project", ".")
+            text = text.replace(path + os.sep, "").replace(path, ".")
     return text
 
 
-def _parse_junit_report(report_path: Path, workdir: Path) -> list[TestOutcome]:
+def _parse_junit_report(report_path: Path, hide: list[Path]) -> tuple[list[TestOutcome], list[str]]:
+    """Returns (test outcomes, collection error messages)."""
     if not report_path.exists():
-        return []
+        return [], []
     try:
-        xml_text = _hide_workdir(report_path.read_text(encoding="utf-8"), workdir)
-        root = ET.fromstring(xml_text)
+        root = ET.fromstring(_hide_paths(report_path.read_text(encoding="utf-8"), hide))
     except (ET.ParseError, UnicodeDecodeError):
-        return []
+        return [], []
 
-    outcomes = []
+    outcomes: list[TestOutcome] = []
+    collection_errors: list[str] = []
     for case in root.iter("testcase"):
         status, message, details = TestStatus.PASSED, "", ""
         for child in case:
-            if child.tag in ("failure", "error", "skipped"):
-                message = (child.get("message") or "").strip()
-                # Keep the end of the traceback: that is where the "E ..." lines are.
-                details = _truncate_start((child.text or "").strip(), MAX_DETAILS_CHARS)
-                if child.tag == "skipped":
-                    status = TestStatus.SKIPPED
-                elif child.tag == "error" or not _is_assertion(message):
-                    # pytest reports any exception inside a test as a "failure";
-                    # we separate genuine assertion failures from crashes like RecursionError.
-                    status = TestStatus.ERROR
-                else:
-                    status = TestStatus.FAILED
+            if child.tag not in ("failure", "error", "skipped"):
+                continue
+            message = (child.get("message") or "").strip()
+            # Keep the end of the traceback: that is where the "E ..." lines are.
+            details = _truncate_start((child.text or "").strip(), MAX_DETAILS_CHARS)
+            if child.tag == "skipped":
+                status = TestStatus.SKIPPED
+            elif child.tag == "error" or not _is_assertion(message):
+                # pytest reports any exception inside a test as a "failure"; we separate
+                # genuine assertion failures from crashes like RecursionError.
+                status = TestStatus.ERROR
+            else:
+                status = TestStatus.FAILED
+
+        if message == "collection failure":
+            # A test module could not even be imported, e.g. ImportError in student code.
+            collection_errors.append(
+                _error_line(details) or f"could not collect {case.get('name')}"
+            )
+            continue
         outcomes.append(
             TestOutcome(
-                name=case.get("name", "?"),
+                file=case.get("file", ""),
+                name=_test_name(case),
                 status=status,
                 message=_first_line(message),
                 details=details,
             )
         )
-    return outcomes
+    return outcomes, collection_errors
+
+
+def _test_name(case: ET.Element) -> str:
+    """Test name, with the class for methods: "TestThing::test_x"."""
+    name = case.get("name", "?")
+    classname = case.get("classname", "")
+    last_part = classname.rsplit(".", 1)[-1]
+    return f"{last_part}::{name}" if last_part.startswith("Test") else name
 
 
 def _is_assertion(message: str) -> bool:
@@ -213,40 +330,36 @@ def _is_assertion(message: str) -> bool:
 
 
 def _summarise(
-    returncode: int, tests: list[TestOutcome], output: str, duration: float
+    returncode: int,
+    tests: list[TestOutcome],
+    collection_errors: list[str],
+    output: str,
+    duration: float,
 ) -> RunResult:
-    # pytest exit codes: 0 all passed, 1 some tests failed, 2+ could not run properly.
-    real_tests = [
-        t for t in tests if t.name != "test_solution"
-    ]  # collection errors appear as a module "test"
-    if returncode == 0 and real_tests:
-        status, error = RunStatus.PASSED, ""
-    elif returncode == 1 and real_tests:
-        status, error = RunStatus.FAILED, ""
+    # pytest exit codes: 0 all passed, 1 some failed, 2 interrupted/collection errors, 5 none ran.
+    error = "; ".join(collection_errors)
+    if tests and returncode == 0:
+        status = RunStatus.PASSED
+    elif tests:
+        status = RunStatus.FAILED
     else:
         status = RunStatus.ERROR
-        error = (
-            _collection_error_message(tests, output) or f"test run failed (exit code {returncode})"
-        )
-        real_tests = []
-
+        if not error:
+            error = (
+                "no tests ran" if returncode == 5 else f"test run failed (exit code {returncode})"
+            )
+            error = _error_line(output) or error
     return RunResult(
-        status=status,
-        tests=real_tests,
-        error_message=error,
-        output=output,
-        duration_seconds=duration,
+        status=status, tests=tests, error_message=error, output=output, duration_seconds=duration
     )
 
 
-def _collection_error_message(tests: list[TestOutcome], output: str) -> str:
-    """Find the most useful line, e.g. "ImportError: cannot import name 'sum_nested'"."""
-    texts = [t.details for t in tests] + [output]
-    for text in texts:
-        for line in text.splitlines():
-            if line.startswith("E ") and "Error" in line:
-                return line[1:].strip()
-    return next((t.message for t in tests if t.message), "")
+def _error_line(text: str) -> str:
+    """The most useful line of a traceback, e.g. "ImportError: cannot import name 'depth'"."""
+    for line in text.splitlines():
+        if line.startswith("E ") and ("Error" in line or "Exception" in line):
+            return line[1:].strip()
+    return ""
 
 
 def _first_line(text: str) -> str:

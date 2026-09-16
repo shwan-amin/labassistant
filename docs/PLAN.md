@@ -2,7 +2,7 @@
 
 One stage at a time, in order. Each stage ends with tests + lint passing, boxes ticked here, a summary and a suggested commit message. Work is committed locally and never pushed.
 
-> **Plan revised** after Stages 0–2 of the original plan were built. The main interface is now a VS Code extension working on a highlighted selection in a multi-file project, with a context builder and an academic-integrity check. Existing work that moved stage: the task-based runner (old Stage 2) is kept as the starting point for the new Stage 3, and the single `tasks/sum_nested` task is replaced by `sample_labs/` in Stage 1.
+> **Plan revised** after Stages 0–2 of the original plan were built. The main interface is now a VS Code extension working on a highlighted selection in a multi-file project, with a context builder and an academic-integrity check. The original single-task runner was reworked into the project runner in Stage 3, and `tasks/sum_nested` was replaced by `sample_labs/`.
 
 ## Stage 0: Project setup
 - [x] Scaffold the repo layout described in `CLAUDE.md`, including `pyproject.toml`, `uv` setup, ruff and pytest config
@@ -30,10 +30,10 @@ One stage at a time, in order. Each stage ends with tests + lint passing, boxes 
 - **Done when:** tests cover selection extraction, relevance detection, budget truncation, each context mode, and non-parseable files.
 
 ## Stage 3: Code execution tool
-- [ ] A sandboxed runner that copies the project to a temp directory and runs either the project's existing tests or agent-written probe tests, with a timeout, captured output and no network access
-- [ ] Returns a structured result: tests passed or failed, error messages, timeouts and exceptions
-- [ ] Exposed as an LLM tool definition (`run_tests`) that takes optional probe test code
-- [ ] Probe tests are for diagnosis only and are never shown to the student as code to copy
+- [x] A sandboxed runner that copies the project to a temp directory and runs either the project's existing tests or agent-written probe tests, with a timeout, captured output and no network access
+- [x] Returns a structured result: tests passed or failed, error messages, timeouts and exceptions
+- [x] Exposed as an LLM tool definition (`run_tests`) that takes optional probe test code
+- [x] Probe tests are for diagnosis only and are never shown to the student as code to copy
 - **Done when:** tests cover a correct project, a wrong answer, an infinite recursion or timeout, a syntax error, and a probe test.
 
 ## Stage 4: Diagnosis agent

@@ -1,4 +1,4 @@
-"""Structured results from running a submission against a task's tests."""
+"""Structured results from running a project's tests or a probe test."""
 
 from enum import StrEnum
 
@@ -6,11 +6,11 @@ from pydantic import BaseModel, Field
 
 
 class RunStatus(StrEnum):
-    PASSED = "passed"  # every selected test passed
+    PASSED = "passed"  # every test that ran passed
     FAILED = "failed"  # tests ran, at least one failed or errored
-    SYNTAX_ERROR = "syntax_error"  # the submission could not be parsed
+    SYNTAX_ERROR = "syntax_error"  # a project file could not be parsed
     TIMEOUT = "timeout"  # the run exceeded its time limit and was killed
-    ERROR = "error"  # tests could not run (e.g. missing function, crash)
+    ERROR = "error"  # tests could not run (e.g. import failure, no tests found)
 
 
 class TestStatus(StrEnum):
@@ -23,20 +23,27 @@ class TestStatus(StrEnum):
 
 
 class TestOutcome(BaseModel):
-    # Tell pytest this is not a test class, despite the name.
-    __test__ = False
+    __test__ = False  # not a pytest test class
 
-    name: str
+    file: str  # project-relative path, e.g. "tests/test_metrics.py"
+    name: str  # e.g. "test_depth" or "test_evaluate[1 + 2 * 3-7]"
     status: TestStatus
     message: str = ""  # one-line summary, e.g. "RecursionError: maximum recursion depth exceeded"
-    details: str = ""  # short traceback, truncated
+    details: str = ""  # short traceback (the end of it), truncated
+
+    @property
+    def test_id(self) -> str:
+        return f"{self.file}::{self.name}"
 
 
 class RunResult(BaseModel):
     status: RunStatus
     tests: list[TestOutcome] = Field(default_factory=list)
-    # Set for SYNTAX_ERROR, TIMEOUT and ERROR to explain what went wrong.
+    # True when this run was an agent-written probe test rather than the project's tests.
+    probe: bool = False
+    # Set for SYNTAX_ERROR, TIMEOUT and ERROR (and FAILED with collection errors).
     error_message: str = ""
+    error_path: str | None = None
     error_line: int | None = None
     output: str = ""  # pytest's console output, truncated
     duration_seconds: float = 0.0
