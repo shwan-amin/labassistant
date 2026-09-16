@@ -19,14 +19,14 @@ One stage at a time, in order. Each stage ends with tests + lint passing, boxes 
 - **Done when:** the graph loads and validates, tests cover the invalid cases, and the sample labs' own tests pass on their reference versions.
 
 ## Stage 2: Context builder
-- [ ] Input model: project files (path and content), selected file path, and selection line range
-- [ ] Filtering: skip gitignored, binary, generated and oversized files, and cap the total project size
-- [ ] Extract the selection and its enclosing function or class
-- [ ] Repo map with `ast`: per file, imports, function and class signatures, and docstrings
-- [ ] Relevance: find project functions and modules the selection calls or imports, and include those in full
-- [ ] Token budget: fill in priority order (selection → enclosing function → rest of file → directly used code → repo map → spec) and record what was included or dropped
-- [ ] A context mode setting (`selection_only`, `file`, `full`) for the evaluation comparison
-- [ ] Order the prompt so the stable part (repo map, spec) can be cached across repeat checks
+- [x] Input model: project files (path and content), selected file path, and selection line range
+- [x] Filtering: skip gitignored, binary, generated and oversized files, and cap the total project size
+- [x] Extract the selection and its enclosing function or class
+- [x] Repo map with `ast`: per file, imports, function and class signatures, and docstrings
+- [x] Relevance: find project functions and modules the selection calls or imports, and include those in full
+- [x] Token budget: fill in priority order (selection → enclosing function → rest of file → directly used code → repo map → spec) and record what was included or dropped
+- [x] A context mode setting (`selection_only`, `file`, `full`) for the evaluation comparison
+- [x] Order the prompt so the stable part (repo map, spec) can be cached across repeat checks
 - **Done when:** tests cover selection extraction, relevance detection, budget truncation, each context mode, and non-parseable files.
 
 ## Stage 3: Code execution tool

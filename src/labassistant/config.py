@@ -5,6 +5,8 @@ from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from labassistant.context.models import ContextMode
+
 
 class Settings(BaseSettings):
     """All runtime configuration in one place.
@@ -24,6 +26,11 @@ class Settings(BaseSettings):
     # Maximum tokens of project context (code, repo map, spec) sent per check.
     # The context builder fills this in priority order and records what it dropped.
     context_token_budget: int = 20000
+    # selection_only | file | full (see labassistant.context.models.ContextMode).
+    context_mode: ContextMode = ContextMode.FULL
+    # Files larger than this, or projects beyond the total, are skipped and recorded.
+    max_file_bytes: int = 200_000
+    max_project_bytes: int = 2_000_000
 
     # Wall-clock limit for one sandboxed test run.
     runner_timeout_seconds: float = 10.0
