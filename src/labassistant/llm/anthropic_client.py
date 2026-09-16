@@ -39,7 +39,9 @@ class AnthropicClient:
         request: dict = {
             "model": self.settings.model_name,
             "max_tokens": max_tokens or self.settings.llm_max_tokens,
-            "system": system,
+            # Mark the system prompt as cacheable: it holds the instructions, concept
+            # graph and stable project overview, which repeat across checks.
+            "system": [{"type": "text", "text": system, "cache_control": {"type": "ephemeral"}}],
             "messages": messages,
         }
         # Only send `tools` when there are some; this is also how the

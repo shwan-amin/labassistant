@@ -22,11 +22,14 @@ Two Gemini details need care:
 
 import base64
 import json
+import re
+import time
 import uuid
+from collections.abc import Callable
 from typing import Any
 
 from google import genai
-from google.genai import types
+from google.genai import errors, types
 
 from labassistant.config import Settings, get_settings
 from labassistant.llm.base import (
@@ -41,6 +44,12 @@ from labassistant.llm.base import (
 # Gemini finish reasons that mean "blocked", reported as "refusal" like Anthropic does.
 BLOCKED_REASONS = {"SAFETY", "RECITATION", "BLOCKLIST", "PROHIBITED_CONTENT", "SPII"}
 
+# The free tier allows only a few requests per minute, so rate-limit errors are
+# expected during normal use. We wait as long as the API asks and try again.
+MAX_RETRIES = 4
+DEFAULT_RETRY_SECONDS = 30.0
+MAX_RETRY_SECONDS = 120.0
+
 
 class GeminiClient:
     """Thin wrapper: sends one request and converts the reply to an LLMResponse.
@@ -49,8 +58,14 @@ class GeminiClient:
     Automatic function calling is switched off so the SDK never runs tools itself.
     """
 
-    def __init__(self, settings: Settings | None = None, client: Any = None) -> None:
+    def __init__(
+        self,
+        settings: Settings | None = None,
+        client: Any = None,
+        sleep: Callable[[float], None] = time.sleep,
+    ) -> None:
         self.settings = settings or get_settings()
+        self._sleep = sleep  # injectable so tests don't really wait
         if client is not None:
             self._client = client  # injected in tests
             return
@@ -75,12 +90,37 @@ class GeminiClient:
             tools=[to_gemini_tool(tools)] if tools else None,
             automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True),
         )
-        response = self._client.models.generate_content(
-            model=self.settings.model_name,
-            contents=to_gemini_contents(messages),
-            config=config,
-        )
-        return from_gemini_response(response)
+        contents = to_gemini_contents(messages)
+        for attempt in range(MAX_RETRIES + 1):
+            try:
+                response = self._client.models.generate_content(
+                    model=self.settings.model_name, contents=contents, config=config
+                )
+                return from_gemini_response(response)
+            except errors.APIError as exc:
+                if not _is_retryable(exc) or attempt == MAX_RETRIES:
+                    raise
+                self._sleep(retry_delay_seconds(exc))
+        raise AssertionError("unreachable")
+
+
+def _is_retryable(exc: errors.APIError) -> bool:
+    # 429: rate limit or quota per minute. 5xx: temporary server trouble.
+    return exc.code == 429 or exc.code >= 500
+
+
+def retry_delay_seconds(exc: errors.APIError) -> float:
+    """Use the delay the API asks for (RetryInfo, e.g. "50s"), within sensible bounds."""
+    details = (
+        (exc.details or {}).get("error", {}).get("details", [])
+        if isinstance(exc.details, dict)
+        else []
+    )
+    for detail in details:
+        delay = str(detail.get("retryDelay", ""))
+        if match := re.fullmatch(r"(\d+(?:\.\d+)?)s", delay):
+            return min(float(match.group(1)) + 1.0, MAX_RETRY_SECONDS)
+    return DEFAULT_RETRY_SECONDS
 
 
 # --- Anthropic-style request -> Gemini ---

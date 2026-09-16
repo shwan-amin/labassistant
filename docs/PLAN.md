@@ -37,14 +37,14 @@ One stage at a time, in order. Each stage ends with tests + lint passing, boxes 
 - **Done when:** tests cover a correct project, a wrong answer, an infinite recursion or timeout, a syntax error, and a probe test.
 
 ## Stage 4: Diagnosis agent
-- [ ] An agent loop that sends the built context, concept graph and optional explanation to the LLM, and lets it call `run_tests`
-- [ ] Structured output with two lists:
+- [x] An agent loop that sends the built context, concept graph and optional explanation to the LLM, and lets it call `run_tests`
+- [x] Structured output with two lists:
   - concept gaps: `concept_id`, `misconception_id` (optional), evidence (file and line numbers, failing tests), and confidence
   - quality notes: category, file and line numbers, and a short explanation with no corrected code
-- [ ] Reject or repair outputs that reference concept IDs not in the graph, or line numbers outside the project files
-- [ ] A post-check that flags and removes any output that contains solution code
-- [ ] Flags to switch off the tool and to leave the concept graph out of the prompt (needed for evaluation)
-- [ ] Record token usage and cost estimate per check
+- [x] Reject or repair outputs that reference concept IDs not in the graph, or line numbers outside the project files
+- [x] A post-check that flags and removes any output that contains solution code
+- [x] Flags to switch off the tool and to leave the concept graph out of the prompt (needed for evaluation)
+- [x] Record token usage and cost estimate per check
 - **Done when:** unit tests pass with the fake client, and a manual run against the real API on both sample labs gives sensible output.
 
 ## Stage 5: Socratic questioning and learner model

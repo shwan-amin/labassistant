@@ -77,6 +77,7 @@ uv run ruff check . && uv run ruff format .      # lint and format
 uv run uvicorn labassistant.api.main:app --reload
 uv run streamlit run ui/streamlit_app.py
 uv run python -m eval.run_all                    # full evaluation
+uv run labassistant-diagnose sample_labs/file_tree metrics.py 20-27   # one real diagnosis (uses your API key)
 
 cd vscode-extension && npm install && npm run compile && npm test
 # then press F5 in VS Code to open the Extension Development Host
@@ -113,6 +114,7 @@ Update this section if commands change.
 - Any concept or misconception ID from the model must exist in the loaded concept graph. Any file and line reference must exist in the submitted project.
 - Keep concept gaps and quality notes separate. Only concept gaps are linked to the concept graph and teaching material.
 - Keep prompts in their own files or constants so they are easy to compare in experiments.
+- The Gemini free tier allows about 5 requests per minute per model. The Gemini client waits and retries on 429s; batch runs (evaluation) must pace themselves.
 - Log prompts, responses and token usage for evaluation runs to `eval/results/logs/`.
 
 ## Academic integrity (hard rule)

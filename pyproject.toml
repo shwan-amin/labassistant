@@ -13,6 +13,9 @@ dependencies = [
     "pytest>=8.0",
 ]
 
+[project.scripts]
+labassistant-diagnose = "labassistant.diagnosis.cli:main"
+
 [dependency-groups]
 dev = [
     "ruff>=0.6",

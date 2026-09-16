@@ -239,3 +239,73 @@ def test_factory_picks_provider() -> None:
 
 def test_fake_client_still_satisfies_interface() -> None:
     assert FakeLLMClient([]).calls == []
+
+
+# --- rate limits ---
+
+
+def rate_limit_error(delay: str | None = "50s"):
+    from google.genai import errors
+
+    details = (
+        [{"@type": "type.googleapis.com/google.rpc.RetryInfo", "retryDelay": delay}]
+        if delay
+        else []
+    )
+    return errors.ClientError(429, {"error": {"code": 429, "message": "quota", "details": details}})
+
+
+class FlakyModels:
+    def __init__(self, failures: list[Exception], response):
+        self.failures = failures
+        self.response = response
+        self.calls = 0
+
+    def generate_content(self, **kwargs):
+        self.calls += 1
+        if self.failures:
+            raise self.failures.pop(0)
+        return self.response
+
+
+def test_rate_limit_waits_for_requested_delay_then_succeeds() -> None:
+    fake = FakeGenaiClient(None)
+    fake.models = FlakyModels(
+        [rate_limit_error("50s"), rate_limit_error(None)], gemini_response([{"text": "ok"}])
+    )
+    waits: list[float] = []
+    client = GeminiClient(settings(), client=fake, sleep=waits.append)
+
+    result = client.complete(system="", messages=[{"role": "user", "content": "x"}])
+
+    assert result.text == "ok"
+    assert fake.models.calls == 3
+    assert waits == [51.0, 30.0]  # requested delay + 1s margin, then the default
+
+
+def test_non_retryable_errors_raise_immediately() -> None:
+    from google.genai import errors
+
+    fake = FakeGenaiClient(None)
+    fake.models = FlakyModels(
+        [errors.ClientError(400, {"error": {"code": 400, "message": "bad"}})], None
+    )
+    client = GeminiClient(settings(), client=fake, sleep=lambda _: None)
+
+    with pytest.raises(errors.ClientError):
+        client.complete(system="", messages=[{"role": "user", "content": "x"}])
+    assert fake.models.calls == 1
+
+
+def test_gives_up_after_max_retries() -> None:
+    from google.genai import errors
+
+    from labassistant.llm.gemini_client import MAX_RETRIES
+
+    fake = FakeGenaiClient(None)
+    fake.models = FlakyModels([rate_limit_error() for _ in range(MAX_RETRIES + 1)], None)
+    client = GeminiClient(settings(), client=fake, sleep=lambda _: None)
+
+    with pytest.raises(errors.ClientError):
+        client.complete(system="", messages=[{"role": "user", "content": "x"}])
+    assert fake.models.calls == MAX_RETRIES + 1
