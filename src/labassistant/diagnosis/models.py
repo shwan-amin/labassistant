@@ -50,7 +50,8 @@ class ConceptGap(BaseModel):
     misconception_id: str | None = None
     confidence: Confidence
     evidence: list[Evidence] = Field(min_length=1)
-    # A short, general explanation for markers and the student. No code.
+    # MARKERS ONLY: never shown to students (decision recorded in CLAUDE.md). It can
+    # describe the fix in words, which the leak check cannot reliably detect. No code.
     rationale: str = ""
 
 

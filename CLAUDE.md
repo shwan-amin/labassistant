@@ -119,7 +119,7 @@ Update this section if commands change.
 
 ## Academic integrity (hard rule)
 
-Students use this on assessed work. The system must **never** produce solutions, corrected code, or code a student could paste in as an answer. It may point to lines, ask guiding questions and explain concepts in general terms. Probe tests written by the agent are for diagnosis only and are never shown to the student. Every student-facing output passes the solution-leak check before it is returned.
+Students use this on assessed work. The system must **never** produce solutions, corrected code, or code a student could paste in as an answer. It may point to lines, ask guiding questions and explain concepts in general terms. Probe tests written by the agent are for diagnosis only and are never shown to the student. Every student-facing output passes the solution-leak check before it is returned. Concept gap **rationales are for markers only**: students see evidence lines, Socratic questions and teaching material, never the rationale (it can describe the fix in words, which no regex can reliably catch).
 
 ## Safety and data rules
 
