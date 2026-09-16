@@ -48,6 +48,11 @@ class Settings(BaseSettings):
     max_file_bytes: int = 200_000
     max_project_bytes: int = 2_000_000
 
+    # Show feedback directly instead of asking Socratic questions first.
+    skip_questioning: bool = False
+    # Identifies the learner in the local learner model (no accounts in this prototype).
+    student_id: str = "local-student"
+
     # Wall-clock limit for one sandboxed test run.
     runner_timeout_seconds: float = 10.0
 

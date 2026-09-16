@@ -1,10 +1,5 @@
 """Parse and check the model's diagnosis against the concept graph and the project."""
 
-import json
-import re
-
-from pydantic import ValidationError
-
 from labassistant.context.models import ProjectFile
 from labassistant.diagnosis.models import (
     Adjustment,
@@ -13,33 +8,14 @@ from labassistant.diagnosis.models import (
     Evidence,
 )
 from labassistant.knowledge.schema import ConceptGraph
+from labassistant.llm.structured import InvalidOutputError, parse_json_model
 
-
-class InvalidOutputError(ValueError):
-    """The model's reply is not usable JSON of the right shape."""
-
-
-_FENCE = re.compile(r"^```(?:json)?\s*(.*?)\s*```$", re.DOTALL)
+__all__ = ["InvalidOutputError", "check_against_project", "parse_output"]
 
 
 def parse_output(text: str) -> DiagnosisOutput:
-    """Parse the reply, tolerating a ```json fence or text around the object."""
-    candidate = text.strip()
-    if match := _FENCE.match(candidate):
-        candidate = match.group(1)
-    elif not candidate.startswith("{"):
-        start, end = candidate.find("{"), candidate.rfind("}")
-        if start == -1 or end <= start:
-            raise InvalidOutputError("no JSON object found in the reply")
-        candidate = candidate[start : end + 1]
-    try:
-        data = json.loads(candidate)
-    except json.JSONDecodeError as exc:
-        raise InvalidOutputError(f"invalid JSON: {exc}") from exc
-    try:
-        return DiagnosisOutput.model_validate(data)
-    except ValidationError as exc:
-        raise InvalidOutputError(f"JSON does not match the required shape: {exc}") from exc
+    """Parse the model's reply into the diagnosis shape (raises InvalidOutputError)."""
+    return parse_json_model(text, DiagnosisOutput)
 
 
 def check_against_project(

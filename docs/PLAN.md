@@ -48,11 +48,11 @@ One stage at a time, in order. Each stage ends with tests + lint passing, boxes 
 - **Done when:** unit tests pass with the fake client, and a manual run against the real API on both sample labs gives sensible output.
 
 ## Stage 5: Socratic questioning and learner model
-- [ ] Generate one guiding question per concept gap. The prompt must forbid giving the answer or corrected code.
-- [ ] Evaluate the student's reply and mark the gap `confirmed` or `cleared`, with a short rationale
-- [ ] Learner model in SQLite: mastery state per student per concept, with a simple, documented update rule that uses both the diagnosis and the answers
-- [ ] A session object tying together selection, context summary, gaps, quality notes, questions, answers and updates
-- [ ] A setting to skip questioning and show feedback directly
+- [x] Generate one guiding question per concept gap. The prompt must forbid giving the answer or corrected code.
+- [x] Evaluate the student's reply and mark the gap `confirmed` or `cleared`, with a short rationale
+- [x] Learner model in SQLite: mastery state per student per concept, with a simple, documented update rule that uses both the diagnosis and the answers
+- [x] A session object tying together selection, context summary, gaps, quality notes, questions, answers and updates
+- [x] A setting to skip questioning and show feedback directly
 - **Done when:** tests cover state transitions, and a scripted role-play session updates mastery sensibly.
 
 ## Stage 6: Teaching material retrieval
