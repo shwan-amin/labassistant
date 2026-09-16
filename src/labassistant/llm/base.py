@@ -11,6 +11,10 @@ Message = dict[str, Any]
 ToolDefinition = dict[str, Any]
 
 
+class MissingAPIKeyError(RuntimeError):
+    """Raised when a real LLM client is created without its API key."""
+
+
 class ToolCall(BaseModel):
     """A request from the model to run one of our tools."""
 

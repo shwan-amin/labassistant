@@ -1,11 +1,23 @@
 """Application settings, loaded from environment variables (and an optional .env file)."""
 
+from enum import StrEnum
 from functools import lru_cache
 from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from labassistant.context.models import ContextMode
+
+
+class LLMProvider(StrEnum):
+    GEMINI = "gemini"
+    ANTHROPIC = "anthropic"
+
+
+DEFAULT_MODELS = {
+    LLMProvider.GEMINI: "gemini-3.6-flash",
+    LLMProvider.ANTHROPIC: "claude-sonnet-5",
+}
 
 
 class Settings(BaseSettings):
@@ -17,10 +29,14 @@ class Settings(BaseSettings):
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
-    # Optional so that tests and offline work never need a key. The real
-    # Anthropic client checks for it and fails with a clear message instead.
+    # Which LLM service to call: "gemini" or "anthropic".
+    llm_provider: LLMProvider = LLMProvider.GEMINI
+    # Keys are optional so tests and offline work never need one. The real
+    # clients check for their key and fail with a clear message instead.
+    gemini_api_key: str | None = None
     anthropic_api_key: str | None = None
-    llm_model: str = "claude-sonnet-5"
+    # Leave unset to use the provider's default model (see DEFAULT_MODELS).
+    llm_model: str | None = None
     llm_max_tokens: int = 16000
 
     # Maximum tokens of project context (code, repo map, spec) sent per check.
@@ -40,6 +56,10 @@ class Settings(BaseSettings):
     sample_labs_dir: Path = Path("sample_labs")
     materials_dir: Path = Path("materials")
     eval_results_dir: Path = Path("eval/results")
+
+    @property
+    def model_name(self) -> str:
+        return self.llm_model or DEFAULT_MODELS[self.llm_provider]
 
 
 @lru_cache

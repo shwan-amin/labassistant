@@ -3,11 +3,14 @@
 import anthropic
 
 from labassistant.config import Settings, get_settings
-from labassistant.llm.base import LLMResponse, Message, ToolCall, ToolDefinition, Usage
-
-
-class MissingAPIKeyError(RuntimeError):
-    pass
+from labassistant.llm.base import (
+    LLMResponse,
+    Message,
+    MissingAPIKeyError,
+    ToolCall,
+    ToolDefinition,
+    Usage,
+)
 
 
 class AnthropicClient:
@@ -21,7 +24,7 @@ class AnthropicClient:
         self.settings = settings or get_settings()
         if not self.settings.anthropic_api_key:
             raise MissingAPIKeyError(
-                "ANTHROPIC_API_KEY is not set. Copy .env.example to .env and add your key."
+                "ANTHROPIC_API_KEY is not set. Add it to .env (see .env.example)."
             )
         self._client = anthropic.Anthropic(api_key=self.settings.anthropic_api_key)
 
@@ -34,7 +37,7 @@ class AnthropicClient:
         max_tokens: int | None = None,
     ) -> LLMResponse:
         request: dict = {
-            "model": self.settings.llm_model,
+            "model": self.settings.model_name,
             "max_tokens": max_tokens or self.settings.llm_max_tokens,
             "system": system,
             "messages": messages,

@@ -18,7 +18,7 @@ Requires Python 3.11+ and [uv](https://docs.astral.sh/uv/).
 
 ```bash
 uv sync
-cp .env.example .env   # then add your ANTHROPIC_API_KEY
+cp .env.example .env   # then add GEMINI_API_KEY (or set LLM_PROVIDER=anthropic)
 uv run pytest
 uv run ruff check .
 ```

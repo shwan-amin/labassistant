@@ -2,7 +2,7 @@
 
 One stage at a time, in order. Each stage ends with tests + lint passing, boxes ticked here, a summary and a suggested commit message. Work is committed locally and never pushed.
 
-> **Plan revised** after Stages 0–2 of the original plan were built. The main interface is now a VS Code extension working on a highlighted selection in a multi-file project, with a context builder and an academic-integrity check. The original single-task runner was reworked into the project runner in Stage 3, and `tasks/sum_nested` was replaced by `sample_labs/`.
+> **Plan revised** after Stages 0–2 of the original plan were built. The main interface is now a VS Code extension working on a highlighted selection in a multi-file project, with a context builder and an academic-integrity check. The original single-task runner was reworked into the project runner in Stage 3, and `tasks/sum_nested` was replaced by `sample_labs/`. After Stage 3, a Gemini adapter was added (`LLM_PROVIDER=gemini`, the default) so development and evaluation can use a free-tier key; the Anthropic client remains available.
 
 ## Stage 0: Project setup
 - [x] Scaffold the repo layout described in `CLAUDE.md`, including `pyproject.toml`, `uv` setup, ruff and pytest config
