@@ -1,0 +1,41 @@
+# Secrets
+.env
+
+# Course material and recordings: never commit
+data/raw/*
+!data/raw/.gitkeep
+*.mp4
+*.mov
+*.mkv
+*.mp3
+*.m4a
+*.wav
+*.pdf
+
+# Evaluation logs (prompts/responses can be large)
+eval/results/logs/
+
+# Learner state databases
+*.db
+*.sqlite3
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+build/
+
+# Node (VS Code extension)
+node_modules/
+out/
+*.vsix
+
+# OS / editors
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+.idea/
