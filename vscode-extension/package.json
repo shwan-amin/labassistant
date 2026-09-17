@@ -1,0 +1,85 @@
+{
+  "name": "lab-assistant",
+  "displayName": "Lab Assistant",
+  "description": "Check your understanding of highlighted code with Socratic questions (research prototype).",
+  "version": "0.1.0",
+  "publisher": "labassistant-research",
+  "private": true,
+  "license": "UNLICENSED",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Education"
+  ],
+  "main": "./out/extension.js",
+  "activationEvents": [],
+  "contributes": {
+    "commands": [
+      {
+        "command": "labAssistant.checkUnderstanding",
+        "title": "Check my understanding",
+        "category": "Lab Assistant"
+      },
+      {
+        "command": "labAssistant.showPanel",
+        "title": "Show panel",
+        "category": "Lab Assistant"
+      },
+      {
+        "command": "labAssistant.resetConsent",
+        "title": "Reset consent to send code",
+        "category": "Lab Assistant"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "labAssistant.checkUnderstanding",
+          "when": "editorHasSelection",
+          "group": "navigation@100"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Lab Assistant",
+      "properties": {
+        "labAssistant.backendUrl": {
+          "type": "string",
+          "default": "http://127.0.0.1:8000",
+          "description": "URL of the local Lab Assistant backend (start it with `uv run labassistant-api`)."
+        },
+        "labAssistant.studentId": {
+          "type": "string",
+          "default": "",
+          "description": "Identifier for your learner model. Leave empty to use the backend's default."
+        },
+        "labAssistant.skipQuestioning": {
+          "type": "boolean",
+          "default": false,
+          "description": "Show feedback directly instead of asking Socratic questions first."
+        },
+        "labAssistant.maxFileBytes": {
+          "type": "number",
+          "default": 200000,
+          "description": "Files larger than this are not sent."
+        },
+        "labAssistant.maxProjectBytes": {
+          "type": "number",
+          "default": 2000000,
+          "description": "Maximum total size of project files sent with a check."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "test": "npm run compile && node --test out/test/"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "~1.90.0",
+    "typescript": "^5.5.0"
+  }
+}

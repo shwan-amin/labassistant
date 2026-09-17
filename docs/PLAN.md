@@ -70,13 +70,13 @@ One stage at a time, in order. Each stage ends with tests + lint passing, boxes 
 - **Done when:** API tests pass using FastAPI's test client and the fake LLM.
 
 ## Stage 8: VS Code extension (main interface)
-- [ ] TypeScript extension in `vscode-extension/` with a "Lab Assistant: Check my understanding" command, available from the right-click menu when text is selected
-- [ ] Collect the selection, its file and line range, and workspace files (respecting `.gitignore` and size limits), with an optional explanation input box
-- [ ] A one-time consent prompt explaining that code is sent to an external LLM API, plus a setting for the backend URL
-- [ ] Show concept gaps and quality notes as diagnostics on the evidence lines, with different severity or styling for each kind
-- [ ] A webview side panel for Socratic questions and answers, feedback cards with slide thumbnails and clickable lecture timestamps, and the concept map
-- [ ] Clear loading and error states (backend not running, request too large, API failure)
-- **Done when:** a full session can be completed by highlighting code in a sample lab in the Extension Development Host, against the local backend and real API.
+- [x] TypeScript extension in `vscode-extension/` with a "Lab Assistant: Check my understanding" command, available from the right-click menu when text is selected
+- [x] Collect the selection, its file and line range, and workspace files (respecting `.gitignore` and size limits), with an optional explanation input box
+- [x] A one-time consent prompt explaining that code is sent to an external LLM API, plus a setting for the backend URL
+- [x] Show concept gaps and quality notes as diagnostics on the evidence lines, with different severity or styling for each kind
+- [x] A webview side panel for Socratic questions and answers, feedback cards with slide thumbnails and clickable lecture timestamps, and the concept map
+- [x] Clear loading and error states (backend not running, request too large, API failure)
+- **Done when:** a full session can be completed by highlighting code in a sample lab in the Extension Development Host, against the local backend and real API. *(Pending: manual check by the author in the Extension Development Host.)*
 
 ## Stage 9: Streamlit dev and marker dashboard
 - [ ] Load a saved session and view the built context, including what was included and dropped, plus token usage

@@ -24,6 +24,16 @@ uv run ruff check .
 uv run labassistant-api   # backend on http://127.0.0.1:8000, interactive API docs at /docs
 ```
 
+## Using the VS Code extension
+
+1. Start the backend: `uv run labassistant-api` (listens on http://127.0.0.1:8000).
+2. Build the extension: `cd vscode-extension && npm install && npm run compile`.
+3. Open the `vscode-extension` folder in VS Code and press **F5**. An Extension Development Host window opens with `sample_labs/file_tree`.
+4. Open a file such as `metrics.py`, highlight a function, right-click and choose **Lab Assistant: Check my understanding**.
+5. The first time, confirm that code may be sent. Then answer the Socratic questions in the side panel.
+
+Concept gaps appear as warnings on the evidence lines; code-quality notes appear as information hints. Settings (backend URL, student id, skip questioning) are under *Settings → Extensions → Lab Assistant*.
+
 ## Evaluation
 
 _To be written (Stage 8)._
