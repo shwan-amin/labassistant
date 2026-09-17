@@ -60,6 +60,8 @@ class Settings(BaseSettings):
     knowledge_dir: Path = Path("knowledge")
     sample_labs_dir: Path = Path("sample_labs")
     materials_dir: Path = Path("materials")
+    # Local only (gitignored): transcripts, slide text and thumbnails.
+    processed_materials_dir: Path = Path("data/raw/processed")
     eval_results_dir: Path = Path("eval/results")
 
     @property

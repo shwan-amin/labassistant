@@ -71,13 +71,14 @@ docs/                # PLAN.md, FINDINGS.md
 ## Commands
 
 ```bash
-uv sync                                          # install dependencies
+uv sync --extra materials                        # install dependencies (plain `uv sync` removes faster-whisper)
 uv run pytest                                    # run tests (offline, fake LLM)
 uv run ruff check . && uv run ruff format .      # lint and format
 uv run uvicorn labassistant.api.main:app --reload
 uv run streamlit run ui/streamlit_app.py
 uv run python -m eval.run_all                    # full evaluation
 uv run labassistant-diagnose sample_labs/file_tree metrics.py 20-27   # one real diagnosis (uses your API key)
+uv run labassistant-materials review mit6_0001_f16_lec6            # check lecture/slide concept tags (see materials/README.md)
 
 cd vscode-extension && npm install && npm run compile && npm test
 # then press F5 in VS Code to open the Extension Development Host

@@ -98,15 +98,35 @@ class GeminiClient:
                 )
                 return from_gemini_response(response)
             except errors.APIError as exc:
+                if is_daily_quota(exc):
+                    raise DailyQuotaExceededError(
+                        f"daily request quota for {self.settings.model_name} is used up; "
+                        "it resets once a day. Try again later or set LLM_MODEL to another model."
+                    ) from exc
                 if not _is_retryable(exc) or attempt == MAX_RETRIES:
                     raise
                 self._sleep(retry_delay_seconds(exc))
         raise AssertionError("unreachable")
 
 
+class DailyQuotaExceededError(RuntimeError):
+    """The free tier's requests-per-day quota is used up. Retrying today won't help."""
+
+
 def _is_retryable(exc: errors.APIError) -> bool:
-    # 429: rate limit or quota per minute. 5xx: temporary server trouble.
+    # 429: per-minute rate limit. 5xx: temporary server trouble.
     return exc.code == 429 or exc.code >= 500
+
+
+def is_daily_quota(exc: errors.APIError) -> bool:
+    """429s carry a QuotaFailure naming the quota; per-day ones contain "PerDay"."""
+    if exc.code != 429 or not isinstance(exc.details, dict):
+        return False
+    for detail in exc.details.get("error", {}).get("details", []):
+        for violation in detail.get("violations", []):
+            if "PerDay" in str(violation.get("quotaId", "")):
+                return True
+    return False
 
 
 def retry_delay_seconds(exc: errors.APIError) -> float:

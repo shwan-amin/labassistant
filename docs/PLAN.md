@@ -56,11 +56,11 @@ One stage at a time, in order. Each stage ends with tests + lint passing, boxes 
 - **Done when:** tests cover state transitions, and a scripted role-play session updates mastery sensibly.
 
 ## Stage 6: Teaching material retrieval
-- [ ] Transcription script: video or audio file → timestamped transcript → chunks of about 30–90 seconds
-- [ ] Slide script: PDF → per-slide text and PNG thumbnail
+- [x] Transcription script: video or audio file → timestamped transcript → chunks of about 30–90 seconds
+- [x] Slide script: PDF → per-slide text and PNG thumbnail
 - [ ] LLM-assisted concept tagging for chunks and slides, saved to a reviewable JSON file that can be corrected by hand
 - [ ] Retrieval: given a confirmed concept gap, return the best lecture chunk (with a timestamped link) and the best slide
-- [ ] Use openly licensed material or own recording for development. Store links and tags, not rehosted media.
+- [x] Use openly licensed material or own recording for development. Store links and tags, not rehosted media.
 - **Done when:** retrieval returns sensible results for each concept, and the tag file is documented.
 
 ## Stage 7: Backend API

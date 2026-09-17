@@ -309,3 +309,36 @@ def test_gives_up_after_max_retries() -> None:
     with pytest.raises(errors.ClientError):
         client.complete(system="", messages=[{"role": "user", "content": "x"}])
     assert fake.models.calls == MAX_RETRIES + 1
+
+
+def test_daily_quota_is_not_retried() -> None:
+    from google.genai import errors
+
+    from labassistant.llm.gemini_client import DailyQuotaExceededError
+
+    daily = errors.ClientError(
+        429,
+        {
+            "error": {
+                "code": 429,
+                "message": "quota",
+                "details": [
+                    {
+                        "@type": "type.googleapis.com/google.rpc.QuotaFailure",
+                        "violations": [
+                            {"quotaId": "GenerateRequestsPerDayPerProjectPerModel-FreeTier"}
+                        ],
+                    },
+                    {"@type": "type.googleapis.com/google.rpc.RetryInfo", "retryDelay": "27s"},
+                ],
+            }
+        },
+    )
+    fake = FakeGenaiClient(None)
+    fake.models = FlakyModels([daily], None)
+    waits: list[float] = []
+    client = GeminiClient(settings(), client=fake, sleep=waits.append)
+
+    with pytest.raises(DailyQuotaExceededError, match="daily request quota"):
+        client.complete(system="", messages=[{"role": "user", "content": "x"}])
+    assert fake.models.calls == 1 and waits == []

@@ -10,11 +10,19 @@ dependencies = [
     "pydantic>=2.7",
     "pydantic-settings>=2.3",
     # The code runner executes task tests with pytest in a subprocess.
+    "pymupdf>=1.24",
     "pytest>=8.0",
+]
+
+[project.optional-dependencies]
+# Heavy, only needed to transcribe lectures: uv sync --extra materials
+materials = [
+    "faster-whisper>=1.0",
 ]
 
 [project.scripts]
 labassistant-diagnose = "labassistant.diagnosis.cli:main"
+labassistant-materials = "labassistant.materials.cli:main"
 
 [dependency-groups]
 dev = [
@@ -39,3 +47,7 @@ select = ["E", "W", "F", "I", "B", "UP"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-ra"
+filterwarnings = [
+    # Noise from PyMuPDF's generated C bindings, not our code.
+    "ignore:builtin type (SwigPyPacked|SwigPyObject|swigvarlink) has no __module__ attribute:DeprecationWarning",
+]
