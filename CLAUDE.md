@@ -4,7 +4,7 @@ An agentic Socratic tutor used from inside VS Code. A student highlights code in
 
 ## Progress
 
-The staged plan lives in `docs/PLAN.md`. Always check it before starting work.
+The staged plan lives in `docs/PLAN.md`. Always check it before starting work. The latest status, quotas and open decisions are in `docs/HANDOFF.md`.
 
 - Work on one stage at a time, in order.
 - At the end of a stage: run tests and lint, tick the completed boxes in `docs/PLAN.md`, summarise what changed, and suggest a commit message.
