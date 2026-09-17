@@ -1,0 +1,1102 @@
+{
+  "source": {
+    "id": "mit6_0001_f16_lec6",
+    "title": "MIT 6.0001 Lecture 6: Recursion and Dictionaries",
+    "lecturer": "Prof. Eric Grimson",
+    "page_url": "https://ocw.mit.edu/courses/6-0001-introduction-to-computer-science-and-programming-in-python-fall-2016/resources/lecture-6-recursion-and-dictionaries/",
+    "timestamp_url_template": "https://archive.org/download/MIT6.0001F16/MIT6_0001F16_Lecture_06_300k.mp4#t={seconds}",
+    "slides_url": "https://ocw.mit.edu/courses/6-0001-introduction-to-computer-science-and-programming-in-python-fall-2016/876348c652c5353daccc96e1b7d577bb_MIT6_0001F16_Lec6.pdf",
+    "license": "CC BY-NC-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+    "attribution": "Eric Grimson, John Guttag, and Ana Bell. 6.0001 Introduction to Computer Science and Programming in Python. Fall 2016. Massachusetts Institute of Technology: MIT OpenCourseWare, https://ocw.mit.edu. License: Creative Commons BY-NC-SA."
+  },
+  "chunks": [
+    {
+      "id": "mit6_0001_f16_lec6-c001",
+      "start": 0.37,
+      "end": 31.86,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c002",
+      "start": 31.86,
+      "end": 66.7,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c003",
+      "start": 66.7,
+      "end": 102.3,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c004",
+      "start": 102.3,
+      "end": 138.78,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c005",
+      "start": 138.78,
+      "end": 176.26,
+      "concept_ids": [
+        "recursive_decomposition"
+      ],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c006",
+      "start": 176.26,
+      "end": 207.38,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c007",
+      "start": 207.42,
+      "end": 239.86,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c008",
+      "start": 239.86,
+      "end": 271.62,
+      "concept_ids": [
+        "recursive_decomposition"
+      ],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c009",
+      "start": 271.62,
+      "end": 310.82,
+      "concept_ids": [
+        "base_case",
+        "recursive_case"
+      ],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c010",
+      "start": 310.82,
+      "end": 347.74,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c011",
+      "start": 347.74,
+      "end": 379.86,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c012",
+      "start": 379.86,
+      "end": 412.98,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c013",
+      "start": 412.98,
+      "end": 443.01,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c014",
+      "start": 443.01,
+      "end": 480.73,
+      "concept_ids": [
+        "recursive_decomposition"
+      ],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c015",
+      "start": 480.73,
+      "end": 511.77,
+      "concept_ids": [
+        "recursive_decomposition"
+      ],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c016",
+      "start": 511.77,
+      "end": 554.94,
+      "concept_ids": [
+        "base_case",
+        "recursive_case"
+      ],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c017",
+      "start": 554.94,
+      "end": 587.71,
+      "concept_ids": [
+        "base_case",
+        "recursive_case"
+      ],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c018",
+      "start": 587.71,
+      "end": 618.34,
+      "concept_ids": [
+        "base_case",
+        "recursive_case"
+      ],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c019",
+      "start": 618.34,
+      "end": 657.66,
+      "concept_ids": [
+        "base_case",
+        "recursive_case"
+      ],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c020",
+      "start": 657.66,
+      "end": 692.06,
+      "concept_ids": [
+        "call_stack"
+      ],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c021",
+      "start": 692.06,
+      "end": 722.06,
+      "concept_ids": [
+        "call_stack",
+        "recursive_case"
+      ],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c022",
+      "start": 722.06,
+      "end": 755.62,
+      "concept_ids": [
+        "call_stack",
+        "recursive_case"
+      ],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c023",
+      "start": 755.62,
+      "end": 787.46,
+      "concept_ids": [
+        "base_case",
+        "call_stack",
+        "recursive_case"
+      ],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c024",
+      "start": 787.46,
+      "end": 819.26,
+      "concept_ids": [
+        "base_case",
+        "call_stack",
+        "return_value_propagation"
+      ],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c025",
+      "start": 819.26,
+      "end": 852.18,
+      "concept_ids": [
+        "call_stack",
+        "return_value_propagation"
+      ],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c026",
+      "start": 852.18,
+      "end": 883.02,
+      "concept_ids": [
+        "call_stack",
+        "return_value_propagation"
+      ],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c027",
+      "start": 883.02,
+      "end": 913.1,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c028",
+      "start": 913.1,
+      "end": 944.34,
+      "concept_ids": [
+        "call_stack",
+        "recursion_vs_iteration"
+      ],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c029",
+      "start": 944.34,
+      "end": 976.58,
+      "concept_ids": [
+        "progress_to_base_case"
+      ],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c030",
+      "start": 976.58,
+      "end": 1006.98,
+      "concept_ids": [
+        "base_case",
+        "progress_to_base_case"
+      ],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c031",
+      "start": 1006.98,
+      "end": 1037.86,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c032",
+      "start": 1037.86,
+      "end": 1069.74,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c033",
+      "start": 1069.74,
+      "end": 1099.82,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c034",
+      "start": 1099.82,
+      "end": 1131.62,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c035",
+      "start": 1131.62,
+      "end": 1161.98,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c036",
+      "start": 1161.98,
+      "end": 1194.58,
+      "concept_ids": [
+        "recursive_decomposition",
+        "base_case"
+      ],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c037",
+      "start": 1194.58,
+      "end": 1226.9,
+      "concept_ids": [
+        "recursive_decomposition",
+        "base_case"
+      ],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c038",
+      "start": 1226.9,
+      "end": 1258.22,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c039",
+      "start": 1258.22,
+      "end": 1288.62,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c040",
+      "start": 1288.62,
+      "end": 1319.7,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c041",
+      "start": 1319.7,
+      "end": 1351.71,
+      "concept_ids": [
+        "recursive_decomposition"
+      ],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c042",
+      "start": 1351.71,
+      "end": 1385.11,
+      "concept_ids": [
+        "recursive_decomposition",
+        "recursive_case"
+      ],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c043",
+      "start": 1385.11,
+      "end": 1415.35,
+      "concept_ids": [
+        "base_case"
+      ],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c044",
+      "start": 1415.35,
+      "end": 1446.3,
+      "concept_ids": [
+        "recursive_case"
+      ],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c045",
+      "start": 1446.3,
+      "end": 1477.89,
+      "concept_ids": [
+        "recursive_decomposition",
+        "recursive_case"
+      ],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c046",
+      "start": 1477.89,
+      "end": 1509.69,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c047",
+      "start": 1509.69,
+      "end": 1541.69,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c048",
+      "start": 1541.69,
+      "end": 1571.92,
+      "concept_ids": [
+        "recursive_decomposition"
+      ],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c049",
+      "start": 1571.92,
+      "end": 1609.56,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c050",
+      "start": 1609.56,
+      "end": 1642.76,
+      "concept_ids": [
+        "recursive_case"
+      ],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c051",
+      "start": 1642.76,
+      "end": 1676.38,
+      "concept_ids": [
+        "base_case",
+        "recursive_case",
+        "progress_to_base_case"
+      ],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c052",
+      "start": 1676.38,
+      "end": 1707.37,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c053",
+      "start": 1707.37,
+      "end": 1739.24,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c054",
+      "start": 1739.24,
+      "end": 1771.32,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c055",
+      "start": 1771.32,
+      "end": 1801.76,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c056",
+      "start": 1801.76,
+      "end": 1832.32,
+      "concept_ids": [
+        "recursive_decomposition",
+        "base_case"
+      ],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c057",
+      "start": 1832.32,
+      "end": 1867.48,
+      "concept_ids": [
+        "recursive_decomposition",
+        "recursive_case"
+      ],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c058",
+      "start": 1867.48,
+      "end": 1900.35,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c059",
+      "start": 1900.35,
+      "end": 1930.43,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c060",
+      "start": 1930.43,
+      "end": 1962.39,
+      "concept_ids": [
+        "base_case",
+        "recursive_case",
+        "progress_to_base_case"
+      ],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c061",
+      "start": 1962.39,
+      "end": 1994.43,
+      "concept_ids": [
+        "recursive_decomposition",
+        "base_case"
+      ],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c062",
+      "start": 1994.43,
+      "end": 2029.18,
+      "concept_ids": [
+        "recursion_vs_iteration"
+      ],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c063",
+      "start": 2029.18,
+      "end": 2060.74,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c064",
+      "start": 2060.74,
+      "end": 2090.82,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c065",
+      "start": 2090.82,
+      "end": 2127.8,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c066",
+      "start": 2127.8,
+      "end": 2162.52,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c067",
+      "start": 2162.52,
+      "end": 2195.88,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c068",
+      "start": 2195.88,
+      "end": 2229.08,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c069",
+      "start": 2229.12,
+      "end": 2264.83,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c070",
+      "start": 2264.83,
+      "end": 2295.23,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c071",
+      "start": 2295.23,
+      "end": 2327.35,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c072",
+      "start": 2327.35,
+      "end": 2361.14,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c073",
+      "start": 2361.14,
+      "end": 2394.38,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c074",
+      "start": 2394.38,
+      "end": 2428.38,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c075",
+      "start": 2428.38,
+      "end": 2458.82,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c076",
+      "start": 2458.82,
+      "end": 2493.78,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c077",
+      "start": 2493.78,
+      "end": 2524.95,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c078",
+      "start": 2524.95,
+      "end": 2556.87,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c079",
+      "start": 2559.63,
+      "end": 2591.35,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c080",
+      "start": 2591.35,
+      "end": 2624.56,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c081",
+      "start": 2624.56,
+      "end": 2654.64,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c082",
+      "start": 2654.64,
+      "end": 2693.68,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c083",
+      "start": 2693.68,
+      "end": 2725.0,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c084",
+      "start": 2725.0,
+      "end": 2757.44,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c085",
+      "start": 2757.44,
+      "end": 2792.84,
+      "concept_ids": [
+        "base_case",
+        "recursive_case"
+      ],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c086",
+      "start": 2792.84,
+      "end": 2823.3,
+      "concept_ids": [
+        "base_case"
+      ],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c087",
+      "start": 2823.3,
+      "end": 2854.22,
+      "concept_ids": [
+        "base_case",
+        "recursive_case"
+      ],
+      "reviewed": false
+    },
+    {
+      "id": "mit6_0001_f16_lec6-c088",
+      "start": 2854.22,
+      "end": 2892.86,
+      "concept_ids": [
+        "recursive_decomposition"
+      ],
+      "reviewed": false
+    }
+  ],
+  "slides": [
+    {
+      "number": 1,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "number": 2,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "number": 3,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "number": 4,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "number": 5,
+      "concept_ids": [
+        "recursive_decomposition"
+      ],
+      "reviewed": false
+    },
+    {
+      "number": 6,
+      "concept_ids": [
+        "recursive_decomposition",
+        "base_case",
+        "recursive_case"
+      ],
+      "reviewed": false
+    },
+    {
+      "number": 7,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "number": 8,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "number": 9,
+      "concept_ids": [
+        "recursive_decomposition",
+        "base_case",
+        "recursive_case"
+      ],
+      "reviewed": false
+    },
+    {
+      "number": 10,
+      "concept_ids": [
+        "recursive_decomposition",
+        "base_case",
+        "recursive_case"
+      ],
+      "reviewed": false
+    },
+    {
+      "number": 11,
+      "concept_ids": [
+        "call_stack"
+      ],
+      "reviewed": false
+    },
+    {
+      "number": 12,
+      "concept_ids": [
+        "call_stack"
+      ],
+      "reviewed": false
+    },
+    {
+      "number": 13,
+      "concept_ids": [
+        "recursion_vs_iteration"
+      ],
+      "reviewed": false
+    },
+    {
+      "number": 14,
+      "concept_ids": [
+        "base_case",
+        "progress_to_base_case",
+        "recursive_case"
+      ],
+      "reviewed": false
+    },
+    {
+      "number": 15,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "number": 16,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "number": 17,
+      "concept_ids": [
+        "recursive_decomposition",
+        "base_case",
+        "recursive_case"
+      ],
+      "reviewed": false
+    },
+    {
+      "number": 18,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "number": 19,
+      "concept_ids": [
+        "recursive_decomposition"
+      ],
+      "reviewed": false
+    },
+    {
+      "number": 20,
+      "concept_ids": [
+        "recursive_decomposition",
+        "base_case",
+        "recursive_case"
+      ],
+      "reviewed": false
+    },
+    {
+      "number": 21,
+      "concept_ids": [
+        "base_case",
+        "recursive_decomposition"
+      ],
+      "reviewed": false
+    },
+    {
+      "number": 22,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "number": 23,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "number": 24,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "number": 25,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "number": 26,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "number": 27,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "number": 28,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "number": 29,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "number": 30,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "number": 31,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "number": 32,
+      "concept_ids": [
+        "base_case",
+        "recursive_decomposition",
+        "recursive_case"
+      ],
+      "reviewed": false
+    },
+    {
+      "number": 33,
+      "concept_ids": [
+        "base_case",
+        "recursive_case",
+        "recursive_decomposition"
+      ],
+      "reviewed": false
+    },
+    {
+      "number": 34,
+      "concept_ids": [
+        "base_case",
+        "recursive_case",
+        "recursive_decomposition"
+      ],
+      "reviewed": false
+    },
+    {
+      "number": 35,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "number": 36,
+      "concept_ids": [
+        "base_case",
+        "recursive_case",
+        "recursive_decomposition"
+      ],
+      "reviewed": false
+    },
+    {
+      "number": 37,
+      "concept_ids": [
+        "recursive_decomposition",
+        "recursive_case",
+        "return_value_propagation"
+      ],
+      "reviewed": false
+    },
+    {
+      "number": 38,
+      "concept_ids": [
+        "base_case",
+        "recursive_case",
+        "recursive_decomposition",
+        "return_value_propagation"
+      ],
+      "reviewed": false
+    },
+    {
+      "number": 39,
+      "concept_ids": [
+        "recursive_decomposition"
+      ],
+      "reviewed": false
+    },
+    {
+      "number": 40,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "number": 41,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "number": 42,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "number": 43,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "number": 44,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "number": 45,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "number": 46,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "number": 47,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "number": 48,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "number": 49,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "number": 50,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "number": 51,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "number": 52,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "number": 53,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "number": 54,
+      "concept_ids": [
+        "base_case",
+        "recursive_case",
+        "recursive_decomposition"
+      ],
+      "reviewed": false
+    },
+    {
+      "number": 55,
+      "concept_ids": [
+        "recursive_case",
+        "recursive_decomposition"
+      ],
+      "reviewed": false
+    },
+    {
+      "number": 56,
+      "concept_ids": [
+        "base_case",
+        "recursive_case",
+        "recursive_decomposition"
+      ],
+      "reviewed": false
+    },
+    {
+      "number": 57,
+      "concept_ids": [],
+      "reviewed": false
+    },
+    {
+      "number": 58,
+      "concept_ids": [],
+      "reviewed": false
+    }
+  ]
+}
