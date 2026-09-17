@@ -40,7 +40,7 @@ export function diagnosticsFor(session: StudentSession): DiagnosticSpec[] {
       path: note.path,
       startLine: note.start_line,
       endLine: note.end_line,
-      message: `${capitalise(note.category.replace(/_/g, " "))}: ${note.explanation}`,
+      message: note.category === "other" ? note.explanation : `${capitalise(note.category.replace(/_/g, " "))}: ${note.explanation}`,
       kind: "quality-note",
     });
   }

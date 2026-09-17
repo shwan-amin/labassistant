@@ -34,7 +34,7 @@ uv run labassistant-api   # backend on http://127.0.0.1:8000, interactive API do
 
 To install it in your normal VS Code instead: `cd vscode-extension && npm run package`, then `code --install-extension lab-assistant-0.1.0.vsix` (or *Extensions → … → Install from VSIX*).
 
-Concept gaps appear as warnings on the evidence lines; code-quality notes appear as information hints. Settings (backend URL, student id, skip questioning) are under *Settings → Extensions → Lab Assistant*.
+Concept gaps appear as warnings on the evidence lines; code-quality notes appear as subtle hints. Click a line chip in the panel to jump to the code. Settings (backend URL, student id, skip questioning) are under *Settings → Extensions → Lab Assistant*.
 
 ## Marker dashboard
 

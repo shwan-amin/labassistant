@@ -92,23 +92,3 @@ export interface AnswerResponse {
   next_question: Question | null;
   complete: boolean;
 }
-
-export interface ConceptNode {
-  id: string;
-  name: string;
-  description: string;
-  state: MasteryState;
-  prerequisites: string[];
-}
-
-export interface ConceptEdge {
-  source: string;
-  target: string;
-}
-
-export interface ConceptMap {
-  student_id: string;
-  topic: string;
-  nodes: ConceptNode[];
-  edges: ConceptEdge[];
-}

@@ -1,6 +1,6 @@
 // Typed client for the local backend, with errors turned into messages a student can act on.
 
-import { AnswerResponse, CheckRequest, CheckResponse, ConceptMap, Material } from "./types";
+import { AnswerResponse, CheckRequest, CheckResponse, Material } from "./types";
 
 export class ApiError extends Error {
   constructor(message: string, readonly status: number | null) {
@@ -27,10 +27,6 @@ export class ApiClient {
 
   materials(sessionId: string, gapIndex: number): Promise<Material[]> {
     return this.json("GET", `/checks/${encodeURIComponent(sessionId)}/gaps/${gapIndex}/materials`);
-  }
-
-  conceptMap(studentId: string): Promise<ConceptMap> {
-    return this.json("GET", `/learners/${encodeURIComponent(studentId)}/mastery`);
   }
 
   /** A backend-relative thumbnail URL as a data: URI, so the webview needs no network access. */

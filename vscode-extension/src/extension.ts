@@ -142,8 +142,8 @@ class Controller {
             session: response.session,
             nextQuestion: response.next_question,
             materials,
+            answers: {},
             answering: false,
-            conceptMap: await this.conceptMapOrUndefined(),
           });
         } catch (error) {
           this.fail(error);
@@ -166,9 +166,11 @@ class Controller {
     this.render();
   }
 
-  private async onMessage(message: { type?: string; gapIndex?: number; answer?: string; url?: string }): Promise<void> {
+  private async onMessage(message: { type?: string; gapIndex?: number; answer?: string; url?: string; path?: string; line?: number }): Promise<void> {
     if (message.type === "openUrl" && typeof message.url === "string" && isSafeExternalUrl(message.url)) {
       await vscode.env.openExternal(vscode.Uri.parse(message.url));
+    } else if (message.type === "reveal" && typeof message.path === "string" && typeof message.line === "number") {
+      await this.reveal(message.path, message.line);
     } else if (message.type === "answer" && typeof message.gapIndex === "number" && typeof message.answer === "string") {
       await this.answer(message.gapIndex, message.answer);
     }
@@ -179,7 +181,7 @@ class Controller {
     if (!session || this.state.answering) {
       return;
     }
-    this.setState({ ...this.state, answering: true });
+    this.setState({ ...this.state, answering: true, answers: { ...this.state.answers, [gapIndex]: answer } });
     try {
       const result = await this.api.submitAnswer(session.session_id, gapIndex, answer);
       const refreshed = await this.api.getCheck(session.session_id);
@@ -191,10 +193,11 @@ class Controller {
         nextQuestion: result.next_question,
         lastChange: result.mastery_change,
         materials: { ...this.state.materials, [gapIndex]: await this.withThumbnails(result.materials) },
-        conceptMap: (await this.conceptMapOrUndefined()) ?? this.state.conceptMap,
       });
     } catch (error) {
-      this.setState({ ...this.state, answering: false });
+      const answers = { ...this.state.answers };
+      delete answers[gapIndex]; // let the student try again with their text
+      this.setState({ ...this.state, answering: false, answers });
       vscode.window.showErrorMessage(error instanceof ApiError ? error.message : String(error));
     }
   }
@@ -257,12 +260,18 @@ class Controller {
     );
   }
 
-  private async conceptMapOrUndefined() {
-    try {
-      return await this.api.conceptMap(this.studentId || "local-student");
-    } catch {
-      return undefined; // the map is a nice-to-have; don't fail the check over it
+  /** Jump to a line in the project. Paths come from the webview, so stay inside the project root. */
+  private async reveal(path: string, line: number): Promise<void> {
+    const root = this.projectRoot;
+    if (!root || path.split("/").some((part) => part === ".." || part === "") || !Number.isInteger(line) || line < 1) {
+      return;
     }
+    const document = await vscode.workspace.openTextDocument(vscode.Uri.joinPath(root, ...path.split("/")));
+    const position = new vscode.Position(Math.min(line, document.lineCount) - 1, 0);
+    await vscode.window.showTextDocument(document, {
+      viewColumn: vscode.ViewColumn.One,
+      selection: new vscode.Selection(position, position),
+    });
   }
 
   private fail(error: unknown): void {
@@ -307,7 +316,8 @@ class Controller {
     const byFile = new Map<string, vscode.Diagnostic[]>();
     for (const spec of diagnosticsFor(this.state.session)) {
       const range = new vscode.Range(spec.startLine - 1, 0, spec.endLine - 1, Number.MAX_SAFE_INTEGER);
-      const severity = spec.kind === "concept-gap" ? vscode.DiagnosticSeverity.Warning : vscode.DiagnosticSeverity.Information;
+      // Gaps get a warning underline; quality notes are subtle hints so they don't cover the code in squiggles.
+      const severity = spec.kind === "concept-gap" ? vscode.DiagnosticSeverity.Warning : vscode.DiagnosticSeverity.Hint;
       const diagnostic = new vscode.Diagnostic(range, spec.message, severity);
       diagnostic.source = "Lab Assistant";
       diagnostic.code = spec.kind;

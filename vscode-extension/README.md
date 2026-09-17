@@ -8,7 +8,7 @@ Highlight code in your lab, right-click and choose **Lab Assistant: Check my und
 - highlights lines that suggest a possible gap in a programming concept (for example base cases in recursion);
 - asks you a **guiding question** instead of giving you the answer;
 - links confirmed gaps to the exact moment in a lecture recording and the matching slide;
-- tracks how secure you are with each concept on a concept map.
+- remembers how secure you are with each concept (visible to markers in the dashboard).
 
 It **never writes solutions or corrected code**.
 

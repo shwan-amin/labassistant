@@ -48,3 +48,12 @@ test("cleared gaps are no longer highlighted, and the question is not put in the
   assert.deepEqual(specs.map((s) => s.kind), ["quality-note"]);
   assert.ok(diagnosticsFor(session("suspected")).every((s) => !s.message.includes("empty directory")));
 });
+
+test("'other' quality notes have no category prefix", () => {
+  const specs = diagnosticsFor({
+    ...session("suspected"),
+    gaps: [],
+    quality_notes: [{ category: "other", path: "a.py", start_line: 1, end_line: 1, explanation: "Docstring and code disagree." }],
+  });
+  assert.equal(specs[0].message, "Docstring and code disagree.");
+});

@@ -78,7 +78,7 @@
     }
   },
   "scripts": {
-    "compile": "tsc -p ./",
+    "compile": "node -e \"require('fs').rmSync('out',{recursive:true,force:true})\" && tsc -p ./",
     "watch": "tsc -watch -p ./",
     "test": "npm run compile && node --test out/test/",
     "test:e2e": "npm run compile && node out/test-e2e/runTest.js",
