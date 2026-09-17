@@ -327,3 +327,20 @@ def test_build_and_review(tmp_path) -> None:
     listing = "\n".join(review_lines(saved, settings, GRAPH))
     assert "The base case stops recursion." in listing  # local text shown for review
     assert "problems: none" in listing and "reviewed 0 of 4" in listing
+
+
+def test_committed_lecture_has_reviewed_material_for_every_concept() -> None:
+    """Retrieval on the real tag file returns a reviewed lecture moment and slide per concept."""
+    tag_files = [load_tag_file(p) for p in (ROOT / "materials").glob("*.tags.json")]
+    if not tag_files:
+        pytest.skip("no tag files committed")
+    reviewed_chunks = {(c.start, c.end) for tf in tag_files for c in tf.chunks if c.reviewed}
+    reviewed_slides = {s.number for tf in tag_files for s in tf.slides if s.reviewed}
+
+    for concept in GRAPH.concepts:
+        links = {link.kind: link for link in retrieve(concept.id, tag_files, GRAPH)}
+        assert set(links) == {"lecture", "slide"}, concept.id
+        assert (links["lecture"].start_seconds, links["lecture"].end_seconds) in reviewed_chunks, (
+            concept.id
+        )
+        assert links["slide"].slide_number in reviewed_slides, concept.id

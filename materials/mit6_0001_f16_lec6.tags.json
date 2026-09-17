@@ -125,17 +125,16 @@
       "concept_ids": [
         "recursive_decomposition"
       ],
-      "reviewed": false
+      "reviewed": true
     },
     {
       "id": "mit6_0001_f16_lec6-c016",
       "start": 511.77,
       "end": 554.94,
       "concept_ids": [
-        "base_case",
-        "recursive_case"
+        "base_case"
       ],
-      "reviewed": false
+      "reviewed": true
     },
     {
       "id": "mit6_0001_f16_lec6-c017",
@@ -155,7 +154,7 @@
         "base_case",
         "recursive_case"
       ],
-      "reviewed": false
+      "reviewed": true
     },
     {
       "id": "mit6_0001_f16_lec6-c019",
@@ -174,7 +173,7 @@
       "concept_ids": [
         "call_stack"
       ],
-      "reviewed": false
+      "reviewed": true
     },
     {
       "id": "mit6_0001_f16_lec6-c021",
@@ -212,11 +211,10 @@
       "start": 787.46,
       "end": 819.26,
       "concept_ids": [
-        "base_case",
-        "call_stack",
-        "return_value_propagation"
+        "return_value_propagation",
+        "base_case"
       ],
-      "reviewed": false
+      "reviewed": true
     },
     {
       "id": "mit6_0001_f16_lec6-c025",
@@ -242,37 +240,35 @@
       "id": "mit6_0001_f16_lec6-c027",
       "start": 883.02,
       "end": 913.1,
-      "concept_ids": [],
-      "reviewed": false
+      "concept_ids": [
+        "recursion_vs_iteration"
+      ],
+      "reviewed": true
     },
     {
       "id": "mit6_0001_f16_lec6-c028",
       "start": 913.1,
       "end": 944.34,
       "concept_ids": [
-        "call_stack",
         "recursion_vs_iteration"
       ],
-      "reviewed": false
+      "reviewed": true
     },
     {
       "id": "mit6_0001_f16_lec6-c029",
       "start": 944.34,
       "end": 976.58,
-      "concept_ids": [
-        "progress_to_base_case"
-      ],
-      "reviewed": false
+      "concept_ids": [],
+      "reviewed": true
     },
     {
       "id": "mit6_0001_f16_lec6-c030",
       "start": 976.58,
       "end": 1006.98,
       "concept_ids": [
-        "base_case",
         "progress_to_base_case"
       ],
-      "reviewed": false
+      "reviewed": true
     },
     {
       "id": "mit6_0001_f16_lec6-c031",
@@ -324,10 +320,9 @@
       "start": 1194.58,
       "end": 1226.9,
       "concept_ids": [
-        "recursive_decomposition",
-        "base_case"
+        "recursive_decomposition"
       ],
-      "reviewed": false
+      "reviewed": true
     },
     {
       "id": "mit6_0001_f16_lec6-c038",
@@ -367,7 +362,7 @@
         "recursive_decomposition",
         "recursive_case"
       ],
-      "reviewed": false
+      "reviewed": true
     },
     {
       "id": "mit6_0001_f16_lec6-c043",
@@ -376,7 +371,7 @@
       "concept_ids": [
         "base_case"
       ],
-      "reviewed": false
+      "reviewed": true
     },
     {
       "id": "mit6_0001_f16_lec6-c044",
@@ -385,7 +380,7 @@
       "concept_ids": [
         "recursive_case"
       ],
-      "reviewed": false
+      "reviewed": true
     },
     {
       "id": "mit6_0001_f16_lec6-c045",
@@ -767,7 +762,7 @@
         "base_case",
         "recursive_case"
       ],
-      "reviewed": false
+      "reviewed": true
     },
     {
       "number": 7,
@@ -786,46 +781,45 @@
         "base_case",
         "recursive_case"
       ],
-      "reviewed": false
+      "reviewed": true
     },
     {
       "number": 10,
       "concept_ids": [
-        "recursive_decomposition",
         "base_case",
         "recursive_case"
       ],
-      "reviewed": false
+      "reviewed": true
     },
     {
       "number": 11,
       "concept_ids": [
         "call_stack"
       ],
-      "reviewed": false
+      "reviewed": true
     },
     {
       "number": 12,
       "concept_ids": [
-        "call_stack"
+        "call_stack",
+        "return_value_propagation"
       ],
-      "reviewed": false
+      "reviewed": true
     },
     {
       "number": 13,
       "concept_ids": [
         "recursion_vs_iteration"
       ],
-      "reviewed": false
+      "reviewed": true
     },
     {
       "number": 14,
       "concept_ids": [
-        "base_case",
         "progress_to_base_case",
-        "recursive_case"
+        "base_case"
       ],
-      "reviewed": false
+      "reviewed": true
     },
     {
       "number": 15,
@@ -841,10 +835,9 @@
       "number": 17,
       "concept_ids": [
         "recursive_decomposition",
-        "base_case",
         "recursive_case"
       ],
-      "reviewed": false
+      "reviewed": true
     },
     {
       "number": 18,

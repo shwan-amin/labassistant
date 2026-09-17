@@ -58,8 +58,8 @@ One stage at a time, in order. Each stage ends with tests + lint passing, boxes 
 ## Stage 6: Teaching material retrieval
 - [x] Transcription script: video or audio file → timestamped transcript → chunks of about 30–90 seconds
 - [x] Slide script: PDF → per-slide text and PNG thumbnail
-- [ ] LLM-assisted concept tagging for chunks and slides, saved to a reviewable JSON file that can be corrected by hand
-- [ ] Retrieval: given a confirmed concept gap, return the best lecture chunk (with a timestamped link) and the best slide
+- [x] LLM-assisted concept tagging for chunks and slides, saved to a reviewable JSON file that can be corrected by hand
+- [x] Retrieval: given a confirmed concept gap, return the best lecture chunk (with a timestamped link) and the best slide
 - [x] Use openly licensed material or own recording for development. Store links and tags, not rehosted media.
 - **Done when:** retrieval returns sensible results for each concept, and the tag file is documented.
 

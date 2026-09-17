@@ -41,4 +41,6 @@ _To be written (Stage 10)._
 
 ## Credits
 
-_Sources of any openly licensed teaching material will be listed here._
+Teaching material links and concept tags (not the media itself) refer to:
+
+- **MIT 6.0001 Lecture 6: Recursion and Dictionaries** (video and slides). Eric Grimson, John Guttag, and Ana Bell. *6.0001 Introduction to Computer Science and Programming in Python*, Fall 2016. Massachusetts Institute of Technology: [MIT OpenCourseWare](https://ocw.mit.edu/courses/6-0001-introduction-to-computer-science-and-programming-in-python-fall-2016/). License: [Creative Commons BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/). The lecture and slides are not redistributed in this repository; `materials/mit6_0001_f16_lec6.tags.json` contains only timestamps, slide numbers and concept tags derived from them, shared under the same licence.
