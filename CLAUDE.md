@@ -81,6 +81,8 @@ uv run labassistant-diagnose sample_labs/file_tree metrics.py 20-27   # one real
 uv run labassistant-materials review mit6_0001_f16_lec6            # check lecture/slide concept tags (see materials/README.md)
 
 cd vscode-extension && npm install && npm run compile && npm test
+npm run test:e2e        # real VS Code + real backend with a scripted LLM (downloads VS Code once)
+npm run package         # builds lab-assistant-<version>.vsix
 # then press F5 in VS Code to open the Extension Development Host
 ```
 

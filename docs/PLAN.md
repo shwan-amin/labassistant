@@ -76,7 +76,7 @@ One stage at a time, in order. Each stage ends with tests + lint passing, boxes 
 - [x] Show concept gaps and quality notes as diagnostics on the evidence lines, with different severity or styling for each kind
 - [x] A webview side panel for Socratic questions and answers, feedback cards with slide thumbnails and clickable lecture timestamps, and the concept map
 - [x] Clear loading and error states (backend not running, request too large, API failure)
-- **Done when:** a full session can be completed by highlighting code in a sample lab in the Extension Development Host, against the local backend and real API. *(Pending: manual check by the author in the Extension Development Host.)*
+- **Done when:** a full session can be completed by highlighting code in a sample lab in the Extension Development Host, against the local backend and real API. *(Verified automatically in a real VS Code instance by `npm run test:e2e`, including one run against Gemini 3.5 Flash-Lite; the author's own recorded walkthrough is pending.)*
 
 ## Stage 9: Streamlit dev and marker dashboard
 - [x] Load a saved session and view the built context, including what was included and dropped, plus token usage

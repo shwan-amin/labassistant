@@ -13,29 +13,65 @@ import { Material } from "./types";
 const CONSENT_KEY = "labAssistant.consentGiven";
 const MAX_FILES = 3000;
 
-export function activate(context: vscode.ExtensionContext): void {
+/** Options for running the command programmatically (keybindings, automated tests). */
+export interface CheckOptions {
+  explanation?: string; // when given, the explanation prompt is skipped
+}
+
+/** Returned from activate() so the end-to-end tests can drive and inspect the extension. */
+export interface LabAssistantTestApi {
+  state(): PanelState;
+  answer(gapIndex: number, answer: string): Promise<void>;
+  setConsent(given: boolean): Thenable<void>;
+}
+
+export function activate(context: vscode.ExtensionContext): LabAssistantTestApi {
   const controller = new Controller(context);
   context.subscriptions.push(
     controller.diagnostics,
-    vscode.commands.registerCommand("labAssistant.checkUnderstanding", () => controller.check()),
+    controller.statusBar,
+    vscode.commands.registerCommand("labAssistant.checkUnderstanding", (arg?: unknown) => controller.check(asCheckOptions(arg))),
     vscode.commands.registerCommand("labAssistant.showPanel", () => controller.showPanel()),
     vscode.commands.registerCommand("labAssistant.resetConsent", async () => {
       await context.globalState.update(CONSENT_KEY, undefined);
       vscode.window.showInformationMessage("Lab Assistant will ask for consent again before sending code.");
     }),
   );
+  return {
+    state: () => controller.currentState,
+    answer: (gapIndex, answer) => controller.answer(gapIndex, answer),
+    setConsent: (given) => context.globalState.update(CONSENT_KEY, given || undefined),
+  };
+}
+
+/** The context menu passes the file's Uri as an argument; only plain option objects count. */
+function asCheckOptions(arg: unknown): CheckOptions {
+  if (arg && typeof arg === "object" && !(arg instanceof vscode.Uri) && "explanation" in arg) {
+    const explanation = (arg as { explanation: unknown }).explanation;
+    return typeof explanation === "string" ? { explanation } : {};
+  }
+  return {};
 }
 
 export function deactivate(): void {}
 
 class Controller {
   readonly diagnostics = vscode.languages.createDiagnosticCollection("labAssistant");
+  readonly statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
   private panel: vscode.WebviewPanel | undefined;
   private state: PanelState = initialPanelState();
   private projectRoot: vscode.Uri | undefined;
   private studentId = "";
 
-  constructor(private readonly context: vscode.ExtensionContext) {}
+  constructor(private readonly context: vscode.ExtensionContext) {
+    this.statusBar.command = "labAssistant.showPanel";
+    this.updateStatusBar();
+    this.statusBar.show();
+  }
+
+  get currentState(): PanelState {
+    return this.state;
+  }
 
   private get config() {
     return vscode.workspace.getConfiguration("labAssistant");
@@ -45,7 +81,7 @@ class Controller {
     return new ApiClient(this.config.get<string>("backendUrl", "http://127.0.0.1:8000"));
   }
 
-  async check(): Promise<void> {
+  async check(options: CheckOptions = {}): Promise<void> {
     const editor = vscode.window.activeTextEditor;
     if (!editor || editor.selection.isEmpty) {
       vscode.window.showInformationMessage("Highlight the code you want to check first.");
@@ -54,11 +90,13 @@ class Controller {
     if (!(await this.ensureConsent())) {
       return;
     }
-    const explanation = await vscode.window.showInputBox({
-      title: "Lab Assistant: Check my understanding",
-      prompt: "Optional: briefly explain what this code is meant to do (press Enter to skip)",
-      ignoreFocusOut: true,
-    });
+    const explanation =
+      options.explanation ??
+      (await vscode.window.showInputBox({
+        title: "Lab Assistant: Check my understanding",
+        prompt: "Optional: briefly explain what this code is meant to do (press Enter to skip)",
+        ignoreFocusOut: true,
+      }));
     if (explanation === undefined) {
       return; // Escape cancels the check
     }
@@ -136,7 +174,7 @@ class Controller {
     }
   }
 
-  private async answer(gapIndex: number, answer: string): Promise<void> {
+  async answer(gapIndex: number, answer: string): Promise<void> {
     const session = this.state.session;
     if (!session || this.state.answering) {
       return;
@@ -236,7 +274,22 @@ class Controller {
   private setState(state: PanelState): void {
     this.state = state;
     this.updateDiagnostics();
+    this.updateStatusBar();
     this.render();
+  }
+
+  private updateStatusBar(): void {
+    const { status, answering, session, nextQuestion } = this.state;
+    if (status === "loading" || answering) {
+      this.statusBar.text = "$(sync~spin) Lab Assistant: checking...";
+    } else if (status === "error") {
+      this.statusBar.text = "$(error) Lab Assistant";
+    } else if (session && nextQuestion) {
+      this.statusBar.text = "$(comment-discussion) Lab Assistant: question waiting";
+    } else {
+      this.statusBar.text = "$(mortar-board) Lab Assistant";
+    }
+    this.statusBar.tooltip = "Show the Lab Assistant panel";
   }
 
   private render(): void {

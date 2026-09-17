@@ -137,6 +137,7 @@ h2 { font-size: 1.1em; margin: 0.4em 0; } h3 { font-size: 1em; margin: 0 0 0.3em
 textarea { width: 100%; box-sizing: border-box; font-family: inherit; color: var(--vscode-input-foreground); background: var(--vscode-input-background); border: 1px solid var(--vscode-input-border); }
 button { margin-top: 6px; padding: 4px 12px; color: var(--vscode-button-foreground); background: var(--vscode-button-background); border: none; border-radius: 3px; cursor: pointer; }
 button:disabled { opacity: 0.6; cursor: default; }
+a { color: var(--vscode-textLink-foreground); } a:hover { color: var(--vscode-textLink-activeForeground); }
 .material { margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--vscode-panel-border); }
 .material img { max-width: 100%; border-radius: 4px; }
 .attribution { font-size: 0.75em; color: var(--vscode-descriptionForeground); }

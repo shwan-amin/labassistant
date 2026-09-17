@@ -2,3 +2,5 @@ src/**
 out/test/**
 .vscode/**
 tsconfig.json
+out/test-e2e/**
+.vscode-test/**

@@ -33,6 +33,7 @@ build/
 node_modules/
 out/
 *.vsix
+.vscode-test/
 
 # OS / editors
 .DS_Store

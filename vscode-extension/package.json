@@ -6,6 +6,11 @@
   "publisher": "labassistant-research",
   "private": true,
   "license": "UNLICENSED",
+  "icon": "media/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shwan-amin/labassistant"
+  },
   "engines": {
     "vscode": "^1.90.0"
   },
@@ -75,11 +80,15 @@
   "scripts": {
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
-    "test": "npm run compile && node --test out/test/"
+    "test": "npm run compile && node --test out/test/",
+    "test:e2e": "npm run compile && node out/test-e2e/runTest.js",
+    "package": "npm run compile && vsce package --skip-license"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
     "@types/vscode": "~1.90.0",
+    "@vscode/test-electron": "^3.1.0",
+    "@vscode/vsce": "^4.0.0",
     "typescript": "^5.5.0"
   }
 }

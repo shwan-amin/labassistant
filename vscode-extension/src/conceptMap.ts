@@ -13,8 +13,9 @@ export interface PositionedNode {
   y: number;
 }
 
-const NODE_WIDTH = 150;
-const NODE_HEIGHT = 34;
+const NODE_WIDTH = 160;
+const NODE_HEIGHT = 40;
+const MAX_LINE_CHARS = 20;
 const H_GAP = 20;
 const V_GAP = 36;
 
@@ -58,10 +59,19 @@ export function layout(map: ConceptMap): { nodes: PositionedNode[]; width: numbe
   const width = widest * (NODE_WIDTH + H_GAP) + H_GAP;
   const byId = new Map(map.nodes.map((n) => [n.id, n]));
   const nodes: PositionedNode[] = [];
-  for (const [level, ids] of [...rows.entries()].sort((a, b) => a[0] - b[0])) {
+  const xById = new Map<string, number>();
+  for (const [level, unordered] of [...rows.entries()].sort((a, b) => a[0] - b[0])) {
+    // Barycentre heuristic: place each concept under the average position of its
+    // prerequisites, which keeps edges short and reduces crossings.
+    const centre = (id: string): number => {
+      const xs = (byId.get(id)?.prerequisites ?? []).map((p) => xById.get(p)).filter((x): x is number => x !== undefined);
+      return xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : 0;
+    };
+    const ids = level === 0 ? unordered : [...unordered].sort((a, b) => centre(a) - centre(b));
     const rowWidth = ids.length * (NODE_WIDTH + H_GAP) - H_GAP;
     const startX = (width - rowWidth) / 2;
     ids.forEach((id, i) => {
+      xById.set(id, startX + i * (NODE_WIDTH + H_GAP));
       const node = byId.get(id)!;
       nodes.push({
         id,
@@ -91,7 +101,8 @@ export function renderConceptMapSvg(map: ConceptMap): string {
     (n) =>
       `<g class="node ${n.state}"><title>${escapeHtml(n.name)}: ${n.state}</title>` +
       `<rect x="${n.x}" y="${n.y}" width="${NODE_WIDTH}" height="${NODE_HEIGHT}" rx="6" fill="${STATE_COLOURS[n.state]}" />` +
-      `<text x="${n.x + NODE_WIDTH / 2}" y="${n.y + NODE_HEIGHT / 2 + 4}" text-anchor="middle">${escapeHtml(n.name)}</text></g>`,
+      textLines(n.name, n.x + NODE_WIDTH / 2, n.y + NODE_HEIGHT / 2) +
+      `</g>`,
   );
   return (
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="Concept map">` +
@@ -99,4 +110,33 @@ export function renderConceptMapSvg(map: ConceptMap): string {
     boxes.join("") +
     `</svg>`
   );
+}
+
+/** Split a name into at most two lines at a space, so long names fit their box. */
+export function wrapName(name: string, maxChars = MAX_LINE_CHARS): string[] {
+  if (name.length <= maxChars) {
+    return [name];
+  }
+  const words = name.split(" ");
+  let best = 1;
+  for (let i = 1; i < words.length; i++) {
+    const first = words.slice(0, i).join(" ").length;
+    const second = words.slice(i).join(" ").length;
+    const bestFirst = words.slice(0, best).join(" ").length;
+    const bestSecond = words.slice(best).join(" ").length;
+    if (Math.max(first, second) < Math.max(bestFirst, bestSecond)) {
+      best = i;
+    }
+  }
+  return words.length > 1 ? [words.slice(0, best).join(" "), words.slice(best).join(" ")] : [name];
+}
+
+function textLines(name: string, centreX: number, centreY: number): string {
+  const lines = wrapName(name);
+  const lineHeight = 14;
+  const firstY = centreY + 4 - ((lines.length - 1) * lineHeight) / 2;
+  const spans = lines
+    .map((line, i) => `<tspan x="${centreX}" y="${firstY + i * lineHeight}">${escapeHtml(line)}</tspan>`)
+    .join("");
+  return `<text text-anchor="middle">${spans}</text>`;
 }

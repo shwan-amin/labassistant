@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { layout, levels, renderConceptMapSvg } from "../conceptMap";
+import { layout, levels, renderConceptMapSvg, wrapName } from "../conceptMap";
 import { escapeHtml, formatTime, isSafeExternalUrl } from "../html";
 import { initialPanelState, PanelState, renderPanel } from "../panelHtml";
 import { ConceptMap, StudentSession } from "../types";
@@ -110,4 +110,26 @@ test("html helpers", () => {
   assert.deepEqual([formatTime(59.9), formatTime(511), formatTime(3725)], ["0:59", "8:31", "1:02:05"]);
   assert.ok(isSafeExternalUrl("https://ocw.mit.edu/x"));
   assert.ok(!isSafeExternalUrl("javascript:alert(1)") && !isSafeExternalUrl("file:///etc/passwd") && !isSafeExternalUrl("nope"));
+});
+
+test("long concept names wrap onto two balanced lines", () => {
+  assert.deepEqual(wrapName("Base case"), ["Base case"]);
+  assert.deepEqual(wrapName("Progress towards the base case"), ["Progress towards", "the base case"]);
+  assert.deepEqual(wrapName("Supercalifragilisticexpialidocious"), ["Supercalifragilisticexpialidocious"]);
+});
+
+test("rows are ordered under their prerequisites to reduce crossings", () => {
+  const crossing: ConceptMap = {
+    student_id: "s",
+    topic: "t",
+    nodes: [
+      { id: "left", name: "L", description: "", state: "unknown", prerequisites: [] },
+      { id: "right", name: "R", description: "", state: "unknown", prerequisites: [] },
+      { id: "under-right", name: "UR", description: "", state: "unknown", prerequisites: ["right"] },
+      { id: "under-left", name: "UL", description: "", state: "unknown", prerequisites: ["left"] },
+    ],
+    edges: [],
+  };
+  const x = Object.fromEntries(layout(crossing).nodes.map((n) => [n.id, n.x]));
+  assert.ok(x["under-left"] < x["under-right"]);
 });
