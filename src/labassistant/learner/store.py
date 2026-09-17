@@ -6,6 +6,7 @@ small tables, plain SQL, and Pydantic models at the boundary.
 
 import json
 import sqlite3
+import threading
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -57,10 +58,13 @@ class MasteryUpdate(BaseModel):
 class LearnerStore:
     def __init__(self, path: Path | str, graph: ConceptGraph) -> None:
         # ":memory:" gives a throwaway database, which the tests use.
+        # The API serves requests from several threads. One shared connection guarded
+        # by a lock is the simplest safe option for a single-user local prototype.
         self.connection = sqlite3.connect(str(path), check_same_thread=False)
         self.connection.row_factory = sqlite3.Row
         self.connection.executescript(SCHEMA)
         self.graph = graph
+        self._lock = threading.RLock()
 
     def close(self) -> None:
         self.connection.close()
@@ -69,10 +73,11 @@ class LearnerStore:
 
     def get_mastery(self, student_id: str) -> dict[str, ConceptMastery]:
         """Mastery for every concept in the graph; concepts never seen are `unknown`."""
-        rows = self.connection.execute(
-            "SELECT concept_id, state, clear_streak FROM mastery WHERE student_id = ?",
-            (student_id,),
-        ).fetchall()
+        with self._lock:
+            rows = self.connection.execute(
+                "SELECT concept_id, state, clear_streak FROM mastery WHERE student_id = ?",
+                (student_id,),
+            ).fetchall()
         stored = {
             row["concept_id"]: ConceptMastery(
                 concept_id=row["concept_id"],
@@ -96,10 +101,12 @@ class LearnerStore:
         if self.graph.get_concept(concept_id) is None:
             raise ValueError(f"unknown concept {concept_id!r}")
 
-        current = self.get_mastery(student_id)[concept_id]
-        updated = apply_event(current, event)
         now = _now()
-        with self.connection:  # one transaction for both writes
+        # Read, update and write under one lock (so two answers can't race) and in
+        # one transaction (so the mastery row and its event log always agree).
+        with self._lock, self.connection:
+            current = self.get_mastery(student_id)[concept_id]
+            updated = apply_event(current, event)
             self.connection.execute(
                 """
                 INSERT INTO mastery (student_id, concept_id, state, clear_streak, updated_at)
@@ -137,19 +144,20 @@ class LearnerStore:
         )
 
     def get_events(self, student_id: str) -> list[MasteryUpdate]:
-        rows = self.connection.execute(
-            """
-            SELECT student_id, concept_id, session_id, event, old_state, new_state
-            FROM mastery_events WHERE student_id = ? ORDER BY id
-            """,
-            (student_id,),
-        ).fetchall()
+        with self._lock:
+            rows = self.connection.execute(
+                """
+                SELECT student_id, concept_id, session_id, event, old_state, new_state
+                FROM mastery_events WHERE student_id = ? ORDER BY id
+                """,
+                (student_id,),
+            ).fetchall()
         return [MasteryUpdate(**dict(row)) for row in rows]
 
     # --- sessions ---
 
     def save_session(self, session_id: str, student_id: str, data: dict) -> None:
-        with self.connection:
+        with self._lock, self.connection:
             self.connection.execute(
                 """
                 INSERT INTO sessions (id, student_id, created_at, data) VALUES (?, ?, ?, ?)
@@ -159,9 +167,10 @@ class LearnerStore:
             )
 
     def load_session(self, session_id: str) -> dict | None:
-        row = self.connection.execute(
-            "SELECT data FROM sessions WHERE id = ?", (session_id,)
-        ).fetchone()
+        with self._lock:
+            row = self.connection.execute(
+                "SELECT data FROM sessions WHERE id = ?", (session_id,)
+            ).fetchone()
         return json.loads(row["data"]) if row else None
 
     def list_sessions(self, student_id: str | None = None) -> list[dict]:
@@ -171,7 +180,10 @@ class LearnerStore:
         if student_id is not None:
             query += " WHERE student_id = ?"
             params = (student_id,)
-        rows = self.connection.execute(query + " ORDER BY created_at DESC, id", params).fetchall()
+        with self._lock:
+            rows = self.connection.execute(
+                query + " ORDER BY created_at DESC, id", params
+            ).fetchall()
         return [dict(row) for row in rows]
 
 

@@ -1,1 +1,1 @@
-"""api package (implemented in a later stage)."""
+"""FastAPI backend."""

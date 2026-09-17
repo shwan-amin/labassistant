@@ -57,6 +57,12 @@ class Settings(BaseSettings):
     runner_timeout_seconds: float = 10.0
 
     database_path: Path = Path("labassistant.db")
+    topic: str = "recursion"
+
+    # Backend API. It only ever listens on this machine.
+    api_port: int = 8000
+    api_allowed_hosts: list[str] = ["localhost", "127.0.0.1"]
+    max_request_bytes: int = 3_000_000
     knowledge_dir: Path = Path("knowledge")
     sample_labs_dir: Path = Path("sample_labs")
     materials_dir: Path = Path("materials")

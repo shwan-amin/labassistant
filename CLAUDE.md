@@ -74,7 +74,7 @@ docs/                # PLAN.md, FINDINGS.md
 uv sync --extra materials                        # install dependencies (plain `uv sync` removes faster-whisper)
 uv run pytest                                    # run tests (offline, fake LLM)
 uv run ruff check . && uv run ruff format .      # lint and format
-uv run uvicorn labassistant.api.main:app --reload
+uv run labassistant-api                          # backend on http://127.0.0.1:8000 (docs at /docs)
 uv run streamlit run ui/streamlit_app.py
 uv run python -m eval.run_all                    # full evaluation
 uv run labassistant-diagnose sample_labs/file_tree metrics.py 20-27   # one real diagnosis (uses your API key)

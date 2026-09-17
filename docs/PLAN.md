@@ -64,9 +64,9 @@ One stage at a time, in order. Each stage ends with tests + lint passing, boxes 
 - **Done when:** retrieval returns sensible results for each concept, and the tag file is documented.
 
 ## Stage 7: Backend API
-- [ ] FastAPI endpoints: start a check (project files, selected file, line range, optional explanation); get diagnosis, quality notes and questions; submit an answer; get the learner model and concept map data; get linked materials for a gap; serve slide thumbnails
-- [ ] Request size limits, request and response models, error handling, and OpenAPI docs
-- [ ] Runs locally on `localhost` only
+- [x] FastAPI endpoints: start a check (project files, selected file, line range, optional explanation); get diagnosis, quality notes and questions; submit an answer; get the learner model and concept map data; get linked materials for a gap; serve slide thumbnails
+- [x] Request size limits, request and response models, error handling, and OpenAPI docs
+- [x] Runs locally on `localhost` only
 - **Done when:** API tests pass using FastAPI's test client and the fake LLM.
 
 ## Stage 8: VS Code extension (main interface)

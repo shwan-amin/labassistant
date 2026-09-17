@@ -6,12 +6,14 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "anthropic>=0.40",
+    "fastapi>=0.115",
     "google-genai>=1.0",
     "pydantic>=2.7",
     "pydantic-settings>=2.3",
     # The code runner executes task tests with pytest in a subprocess.
     "pymupdf>=1.24",
     "pytest>=8.0",
+    "uvicorn>=0.30",
 ]
 
 [project.optional-dependencies]
@@ -23,9 +25,11 @@ materials = [
 [project.scripts]
 labassistant-diagnose = "labassistant.diagnosis.cli:main"
 labassistant-materials = "labassistant.materials.cli:main"
+labassistant-api = "labassistant.api.main:run"
 
 [dependency-groups]
 dev = [
+    "httpx>=0.27",
     "ruff>=0.6",
 ]
 
@@ -50,4 +54,6 @@ addopts = "-ra"
 filterwarnings = [
     # Noise from PyMuPDF's generated C bindings, not our code.
     "ignore:builtin type (SwigPyPacked|SwigPyObject|swigvarlink) has no __module__ attribute:DeprecationWarning",
+    # Starlette's test client uses a deprecated anyio alias; not our code.
+    "ignore:The anyio.abc.BlockingPortal alias is deprecated:DeprecationWarning",
 ]

@@ -21,6 +21,7 @@ uv sync
 cp .env.example .env   # then add GEMINI_API_KEY (or set LLM_PROVIDER=anthropic)
 uv run pytest
 uv run ruff check .
+uv run labassistant-api   # backend on http://127.0.0.1:8000, interactive API docs at /docs
 ```
 
 ## Evaluation
