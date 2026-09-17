@@ -41,7 +41,7 @@ diagnosis agent ──(run_tests tool: project tests or probe tests)──> sand
 extension shows line highlights + side panel
 ```
 
-Interfaces (VS Code extension, Streamlit dashboard) only talk to the FastAPI backend. No core logic belongs in a UI.
+Interfaces (VS Code extension, Streamlit dashboard) only talk to the FastAPI backend. No core logic belongs in a UI. `/marker/*` endpoints expose marker-only data (rationales, answer judgements, probe code) and require the `X-Marker-Token` header; they are disabled when `MARKER_TOKEN` is unset.
 
 ## Repo layout
 
@@ -71,11 +71,11 @@ docs/                # PLAN.md, FINDINGS.md
 ## Commands
 
 ```bash
-uv sync --extra materials                        # install dependencies (plain `uv sync` removes faster-whisper)
+uv sync --extra materials --extra dashboard      # install dependencies (plain `uv sync` removes the extras)
 uv run pytest                                    # run tests (offline, fake LLM)
 uv run ruff check . && uv run ruff format .      # lint and format
 uv run labassistant-api                          # backend on http://127.0.0.1:8000 (docs at /docs)
-uv run streamlit run ui/streamlit_app.py
+uv run streamlit run ui/streamlit_app.py         # marker dashboard (needs MARKER_TOKEN on the backend)
 uv run python -m eval.run_all                    # full evaluation
 uv run labassistant-diagnose sample_labs/file_tree metrics.py 20-27   # one real diagnosis (uses your API key)
 uv run labassistant-materials review mit6_0001_f16_lec6            # check lecture/slide concept tags (see materials/README.md)

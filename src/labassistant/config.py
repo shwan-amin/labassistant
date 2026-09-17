@@ -63,6 +63,9 @@ class Settings(BaseSettings):
     api_port: int = 8000
     api_allowed_hosts: list[str] = ["localhost", "127.0.0.1"]
     max_request_bytes: int = 3_000_000
+    # Required as X-Marker-Token for /marker endpoints (they show rationales).
+    # When unset, marker endpoints are disabled.
+    marker_token: str | None = None
     knowledge_dir: Path = Path("knowledge")
     sample_labs_dir: Path = Path("sample_labs")
     materials_dir: Path = Path("materials")

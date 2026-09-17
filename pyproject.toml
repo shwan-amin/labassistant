@@ -21,6 +21,10 @@ dependencies = [
 materials = [
     "faster-whisper>=1.0",
 ]
+# Marker/dev dashboard: uv sync --extra dashboard
+dashboard = [
+    "streamlit>=1.40",
+]
 
 [project.scripts]
 labassistant-diagnose = "labassistant.diagnosis.cli:main"

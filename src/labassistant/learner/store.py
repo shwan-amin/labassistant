@@ -43,6 +43,16 @@ CREATE TABLE IF NOT EXISTS sessions (
     created_at  TEXT NOT NULL,
     data        TEXT NOT NULL
 );
+
+-- A marker's decision on one diagnosis item, kept for evaluation.
+CREATE TABLE IF NOT EXISTS marker_reviews (
+    session_id  TEXT NOT NULL,
+    item_type   TEXT NOT NULL,     -- "gap" or "note"
+    item_index  INTEGER NOT NULL,
+    data        TEXT NOT NULL,     -- the review as JSON
+    updated_at  TEXT NOT NULL,
+    PRIMARY KEY (session_id, item_type, item_index)
+);
 """
 
 
@@ -185,6 +195,38 @@ class LearnerStore:
                 query + " ORDER BY created_at DESC, id", params
             ).fetchall()
         return [dict(row) for row in rows]
+
+    def list_students(self) -> list[str]:
+        with self._lock:
+            rows = self.connection.execute(
+                "SELECT student_id FROM mastery UNION SELECT student_id FROM sessions ORDER BY 1"
+            ).fetchall()
+        return [row[0] for row in rows]
+
+    # --- marker reviews ---
+
+    def save_review(self, session_id: str, item_type: str, item_index: int, data: dict) -> None:
+        with self._lock, self.connection:
+            self.connection.execute(
+                """
+                INSERT INTO marker_reviews (session_id, item_type, item_index, data, updated_at)
+                VALUES (?, ?, ?, ?, ?)
+                ON CONFLICT (session_id, item_type, item_index)
+                DO UPDATE SET data = excluded.data, updated_at = excluded.updated_at
+                """,
+                (session_id, item_type, item_index, json.dumps(data), _now()),
+            )
+
+    def get_reviews(self, session_id: str) -> list[dict]:
+        with self._lock:
+            rows = self.connection.execute(
+                """
+                SELECT data FROM marker_reviews WHERE session_id = ?
+                ORDER BY item_type, item_index
+                """,
+                (session_id,),
+            ).fetchall()
+        return [json.loads(row["data"]) for row in rows]
 
 
 def _now() -> str:

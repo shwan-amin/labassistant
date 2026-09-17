@@ -11,6 +11,7 @@ from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from google.genai import errors as genai_errors
 
+from labassistant.api.marker import router as marker_router
 from labassistant.api.schemas import (
     AnswerRequest,
     AnswerResponse,
@@ -79,6 +80,7 @@ def create_app(settings: Settings | None = None, client: LLMClient | None = None
         return await call_next(request)
 
     _add_error_handlers(app)
+    app.include_router(marker_router)
 
     @app.get("/health", tags=["meta"])
     def health() -> dict:

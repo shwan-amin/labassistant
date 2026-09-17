@@ -34,6 +34,10 @@ uv run labassistant-api   # backend on http://127.0.0.1:8000, interactive API do
 
 Concept gaps appear as warnings on the evidence lines; code-quality notes appear as information hints. Settings (backend URL, student id, skip questioning) are under *Settings → Extensions → Lab Assistant*.
 
+## Marker dashboard
+
+Set `MARKER_TOKEN` in `.env`, start the backend, then run `uv run streamlit run ui/streamlit_app.py` and enter the token in the sidebar. The dashboard shows each check's context (included and dropped), token usage, tool calls, rationales and answers, and lets a marker accept, override or reject each concept gap and quality note. Reviews are saved for the evaluation.
+
 ## Evaluation
 
 _To be written (Stage 8)._

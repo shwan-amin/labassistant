@@ -79,9 +79,9 @@ One stage at a time, in order. Each stage ends with tests + lint passing, boxes 
 - **Done when:** a full session can be completed by highlighting code in a sample lab in the Extension Development Host, against the local backend and real API. *(Pending: manual check by the author in the Extension Development Host.)*
 
 ## Stage 9: Streamlit dev and marker dashboard
-- [ ] Load a saved session and view the built context, including what was included and dropped, plus token usage
-- [ ] A "marker view" where a human can accept or override each concept gap and quality note (human–AI interaction), with overrides saved for evaluation
-- [ ] A learner model viewer
+- [x] Load a saved session and view the built context, including what was included and dropped, plus token usage
+- [x] A "marker view" where a human can accept or override each concept gap and quality note (human–AI interaction), with overrides saved for evaluation
+- [x] A learner model viewer
 - **Done when:** sessions created from the extension can be inspected and reviewed.
 
 ## Stage 10: Evaluation harness (the research part)
